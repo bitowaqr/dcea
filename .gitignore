@@ -5,7 +5,3 @@
 .Ruserdata
 OLD/
 NOTES
-
-git remote add origin https://github.com/bitowaqr/dcea.git
-git branch -M main
-git push -u origin main
