@@ -1,0 +1,21 @@
+﻿risk_factor,imd,prop
+Smoking,1,0.2822
+Smoking,2,0.1785
+Smoking,3,0.1645
+Smoking,4,0.1275
+Smoking,5,0.1005
+Obesity,1,0.3458
+Obesity,2,0.2546
+Obesity,3,0.2496
+Obesity,4,0.2485
+Obesity,5,0.2035
+Low Physical Activity,1,0.401
+Low Physical Activity,2,0.331
+Low Physical Activity,3,0.3195
+Low Physical Activity,4,0.2915
+Low Physical Activity,5,0.2775
+Increased / higher risk alcohol consumption,1,0.1769
+Increased / higher risk alcohol consumption,2,0.1844
+Increased / higher risk alcohol consumption,3,0.2203
+Increased / higher risk alcohol consumption,4,0.2604
+Increased / higher risk alcohol consumption,5,0.2653
