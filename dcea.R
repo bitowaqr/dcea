@@ -16,7 +16,7 @@ source("functions_revised.R")
 
 
 # DEV:
-HIDE_LOADING_SCREEN = T
+HIDE_LOADING_SCREEN = F
 
 # rename highchart donwload btn
 lang <- getOption("highcharter.lang")
@@ -412,10 +412,13 @@ ui = dashboardPage(
           
           hr(),
           
+          tags$details(
+            tags$summary("Show detailed results"),
           div(
             style="overflow-x: scroll;",
             dataTableOutput("netbenefit_table")
-          ),
+            ),
+          )
           
           
           
@@ -441,7 +444,6 @@ ui = dashboardPage(
               value = "main-tab",
               
               div(
-                div("Net health benefit distribution" , class = "text-primary"),
                 div(
                   class="d-flex align-items-center",
                   div(class="pe-2 fw-bold mb-3","Select plot:"),
@@ -479,7 +481,7 @@ ui = dashboardPage(
                       ),
                       selected = "equityimpact_plot"
                     ),
-                    div(class="pb-1",prettySwitch("show_prev", "Show previous scenarios",value = T))
+                    div(class="pb-1",prettySwitch("show_prev", "History",value = T))
                 ),
                 highchartOutput("plane_plot"), 
                 textOutput("raw_icer_text"),
@@ -1418,6 +1420,7 @@ server = function(input, output, session){
   output$report_download <- downloadHandler(
     filename = "equity_report.html",
     content = function(file) {
+      alert("Error: not implemented")
       # Copy the report file to a temporary directory before processing it, in
       # case we don't have write permissions to the current working dir (which
       # can happen when deployed).
@@ -1516,9 +1519,9 @@ server = function(input, output, session){
         "onbeforechange" = I("
         if (this._currentStep==3) 
           document.querySelector('#cea-tab').parentElement.childNodes[1].click();
-        if (this._currentStep==5) 
+        else if (this._currentStep==5) 
           document.querySelector('#eligiblity-tab').parentElement.childNodes[1].click();
-        return;
+        
         ")
         )
     )

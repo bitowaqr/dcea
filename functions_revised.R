@@ -695,6 +695,7 @@ plot_equity_impact <- function(
       hc_add_series(
         data = eip, "scatter",
         pointPadding = 0, groupPadding= 0.1,
+        color="var(--primary)",
         marker = list(enabledThreshold=0,radius=8),
         hcaes(
           x=ede,
@@ -827,6 +828,7 @@ plot_icer_equity_impact <- function(
   p1 = highchart() %>%
     hc_add_series(
       data = eip, "scatter",
+      color="var(--primary)",
       pointPadding = 0, groupPadding= 0.1,
       marker = list(enabledThreshold=0,radius=8),
       hcaes(

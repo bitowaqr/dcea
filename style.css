@@ -272,6 +272,7 @@ table.dataTable tbody td {
   margin: 0px; 
   transform: translate(-50%, -50%);
   font-size: 2em;
+  color: var(--primary) !important;
 }
 
 .cell {
@@ -288,4 +289,14 @@ table.dataTable tbody td {
 
 .cell .image {
   width: 100%;
+}
+
+
+.irs--shiny .irs-bar {
+  border-top: 1px solid var(--primary);
+  border-bottom: 1px solid var(--primary);
+  background: var(--primary);
+}
+.irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
+  background-color: var(--primary);
 }
