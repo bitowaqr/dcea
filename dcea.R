@@ -370,7 +370,7 @@ ui = dashboardPage(
           # sii
           div(
             class = "fs-5  fw-bold  d-flex justify-content-between align-items-center py-1",
-            span(tip("Net health inequality",tip = "Slope index of inequality (SII): The modelled gap between the most and least deprived individuals calculated from a simple linear regression line. This is similar to the observed gap between most and least deprived groups, but also takes into account outcomes for the middle groups. A negative SII indicates the most deprived have worse health outcomes than the least deprived. A reduction in the SII indicates absolute health inequality has been reduced."), "reduction:"), 
+            span(tip("Net health inequality",tip = "This value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "reduction:"), 
             div(
               class = "custom-col fw-bold text-decoration-underline fw-bold card d-inline-block px-2 py-1 text-center",
               textOutput("sii",inline = T), "QALYs"
@@ -380,7 +380,7 @@ ui = dashboardPage(
           # siai
           div(
             class = "fs-6 d-flex justify-content-between align-items-center py-1",
-            span(tip("Slope Index of Absolute Inequality",tip="info"),"Slope index of inequality (SII): The modelled gap between the most and least deprived individuals calculated from a simple linear regression line. This is similar to the observed gap between most and least deprived groups, but also takes into account outcomes for the middle groups. A negative SII indicates the most deprived have worse health outcomes than the least deprived. A reduction in the SII indicates absolute health inequality has been reduced.:"), 
+            span(tip("Slope Index of Absolute Inequality",tip="Slope index of inequality (SII): The modelled gap between the most and least deprived individuals calculated from a simple linear regression line. This is similar to the observed gap between most and least deprived groups, but also takes into account outcomes for the middle groups. A negative SII indicates the most deprived have worse health outcomes than the least deprived. A reduction in the SII indicates absolute health inequality has been reduced.:"),"reduction"), 
             div(
               class = "custom-col text-decoration-underline fw-bold card d-inline-block px-2 py-1",
               textOutput("siai_reduction",inline = T), 
