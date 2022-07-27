@@ -291,7 +291,10 @@ ui = dashboardPage(
     div(
       id="landing-div",
       style = "position: absolute; top:0; bottom:0; left:0; right:0; z-index: 1900;",
-      class= "bg-dark d-flex flex-column",
+      class= "bg-dark",
+      div(
+        style = "height:100vh; width: 100vw; position: relative;",
+        class = "d-flex flex-column",
         progress_circle(
           value = 0, 
           shiny_id = "progress-circle",
@@ -325,6 +328,7 @@ ui = dashboardPage(
           ),
         ),
       ),
+    )
     )
     },
     
