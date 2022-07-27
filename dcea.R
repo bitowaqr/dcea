@@ -413,7 +413,7 @@ ui = dashboardPage(
           hr(),
           
           tags$details(
-            tags$summary("Show detailed results"),
+            tags$summary(span(class="fw-bold custom-col", "Show detailed results")),
           div(
             style="overflow-x: scroll;",
             dataTableOutput("netbenefit_table")
