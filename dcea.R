@@ -16,7 +16,7 @@ source("functions_revised.R")
 
 
 # DEV:
-HIDE_LOADING_SCREEN = F
+HIDE_LOADING_SCREEN = T
 
 # rename highchart donwload btn
 lang <- getOption("highcharter.lang")
@@ -49,7 +49,8 @@ ui = dashboardPage(
     titleWidth = "320px",
     tags$li(
       class = "dropdown pe-5 text-white fw-bold", 
-      actionLink("tutorial_start","? WATCH THE TUTORIAL")
+      icon("question-circle"),
+      actionLink("tutorial_start","Watch the tutorial")
       )
     ),
   
@@ -355,150 +356,251 @@ ui = dashboardPage(
           ),
                          ),
         # card 1 -----
+        
         div(
           id="card-1",
-          class = "d-flex flex-column card card-body shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2",
+          class = "card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2",
+        
+          div(
+            class = "card-header text-white card-title fs-5",
+            style = "background-color: var(--primary)",
+            "Distributional health impact",
+          ),
+          
+        div(
+          class = "d-flex flex-column card-body",
           style ="min-width: 350px; flex-start: 48%; max-width: 750px;",
           
-          
           div(
-            class="lh-sm mb-2",
-            div("Intervention:",span(class="text-decoration-underline fw-bold",textOutput("intName_txt", inline = T)), class="fs-5"),
-            div("Scenario:",textOutput("scenario_txt", inline = T),class="text-secondary")
-          ),
-          
-          # sii
-          div(
-            class = "fs-5  fw-bold  d-flex justify-content-between align-items-center py-1",
-            span(tip("Net health inequality",tip = "This value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "reduction:"), 
             div(
-              class = "custom-col fw-bold text-decoration-underline fw-bold card d-inline-block px-2 py-1 text-center",
-              textOutput("sii",inline = T), "QALYs"
+              class="d-flex",
+              div(class="ms-auto pe-2 fw-bold flex-shrink-0 align-bottom","Select plot:"),
+              selectInput(
+                "netbenefit_plot_type",
+                label = NULL,
+                width = "100%",
+                choices = c(
+                  "Eligible population",
+                  "Uptake rate",
+                  "Incremental QALYs/person",
+                  "Share of opportunity costs",
+                  "Proportion of recipients",
+                  "Number of recipients",
+                  "Intervention benefit",
+                  "Intervention opportunity costs",                     
+                  "Net health benefit"
+                ),
+                selected = "Net health benefit"
+              )
             ),
+            highchartOutput("netbenefit_plot"),
           ),
           
-          # siai
-          div(
-            class = "fs-6 d-flex justify-content-between align-items-center py-1",
-            span(tip("Slope Index of Absolute Inequality",tip="Slope index of inequality (SII): The modelled gap between the most and least deprived individuals calculated from a simple linear regression line. This is similar to the observed gap between most and least deprived groups, but also takes into account outcomes for the middle groups. A negative SII indicates the most deprived have worse health outcomes than the least deprived. A reduction in the SII indicates absolute health inequality has been reduced.:"),"reduction"), 
-            div(
-              class = "custom-col text-decoration-underline fw-bold card d-inline-block px-2 py-1",
-              textOutput("siai_reduction",inline = T), 
-            ),
-          ),
           
-          # rii
-          div(
-            class = "fs-6 d-flex justify-content-between align-items-center py-1",
-            span(tip("Relative Index on Inequality", "Relative index of inequality (RII): The proportional gap between the most and least deprived individuals, derived from the SII. An RII of -1 means the estimated health outcomes for the most deprived are 100% greater than those for the least deprived. A reduction in the RII indicates relative health inequality has been reduced."),"reduction:"),
-            div(
-              class = "custom-col text-decoration-underline fw-bold card d-inline-block px-2 py-1",
-              textOutput("rii_reduction",inline = T), 
-            ),
-          ),
-          
-          # ci
-          div(
-            class = "fs-6 d-flex justify-content-between align-items-center py-1",
-            span(tip("Concentration Index", "Concentration index: Another index of relative inequality, similar to the Gini index of income inequality and based on the correlation between deprivation rank and relative 'shares' of population total health. Equals -1 or 1 when only the most or least deprived individual experiences any health at all, and 0 if health is equally distributed. A reduction in a positive concentration index (or an increase for a negative index) indicates health inequality has been reduced."),"reduction:"),
-            div(
-              class = "custom-col text-decoration-underline fw-bold card d-inline-block px-2 py-1",
-              textOutput("ci_reduction",inline = T), 
-            ),
-          ),
-          
-          # total health ineq modal 
-          div(
-            class = "ps-1 mt-2",
-            actionLink("total_inequality_modal",label = "What is the total health inequality in England?",
-                       class = "text-secondary text-decoration-underline small tri-marker")
-          ),
-          
-          hr(),
-          
-          tags$details(
-            tags$summary(span(class="fw-bold custom-col", "Show detailed results")),
           div(
             style="overflow-x: scroll;",
             dataTableOutput("netbenefit_table")
-            ),
-          )
+          ),
           
           
           
+        ),
+        
         ),
         
         
         
         
         # # card 2 -----
+        
         div(
           id="card-2",
-          class = "d-flex flex-column card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2 ",
-          style ="min-width: 400px; flex-start: 48%; flex-shrink: 0; flex-grow: 0; width: 50%;",
-          tabBox(
-            title = NULL,
-            selected = "main-tab",
-            # The id lets us use input$tabset1 on the server to find the current tab
-            id = "tab_box1", 
-            width = 12,
+          class = "card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2",
+          # style ="min-width: 400px; flex-start: 48%; flex-shrink: 0; flex-grow: 0; width: 50%;",
+          
+          div(
+            class = "card-header text-white card-title fs-5",
+            style = "background-color: var(--primary)",
+            "Equity & efficiency",
+          ),
+          
+          div(
+            class = "d-flex flex-column card-body",
+            style = "min-width: 350px; flex-start: 48%; max-width: 750px;",
             
-            tabPanel(
-              title = "Net health impact", 
-              value = "main-tab",
+            
+            # div(
+            #   class = "d-flex flex-row align-items-start justify-content-evenly",
+            #   div(
+            #     class = "px-3",
+            #     
+            #   ),
+            #   # sliderInput(
+            #   #   "eip_aversion",
+            #   #   tip("Atkinson inequality aversion", tipId = "implicit_weight"),
+            #   #   min = 0, max = 20, value = 1, step = 0.5
+            #   # ),
+            # ),
+            
+            
+            tags$table(
+              class = "mx-1 px-3 mb-4 border",
               
-              div(
-                div(
-                  class="d-flex align-items-center",
-                  div(class="pe-2 fw-bold mb-3","Select plot:"),
-                  selectInput(
-                    "netbenefit_plot_type",
-                    label = NULL,
-                    choices = c(
-                      "Number of recipients" = "recipients",
-                      "Intervention health benefits" = "benefits", 
-                      "Health opportunity costs" = "costs",
-                      "Net health benefit" = "net"
-                    ),
-                    selected = "net"
-                  )
+              tags$colgroup(
+                tags$col(span=1, width = "70%"),
+                tags$col(span=1, width = "30%"),
+              ),
+              
+              tags$tr(
+                tags$td(class="fw-bold", tip("Net health inequality",tip = "This value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "benefit:"),
+                tags$td(
+                  class = "custom-col fw-bold px-2 py-1 text-start",
+                  textOutput("sii",inline = T), "QALYs")
+              ),
+              
+              tags$tr(
+                tags$td("ICER"),
+                tags$td(textOutput("icer_text2",inline = T))
+              ),
+              
+              
+              tags$tr(
+                tags$td(tip("Decision threshold", "info")),
+                tags$td(autonumericInput(
+                  "eip_threshold",label = NULL, 
+                  20000, min = 0, max = 500000,
+                  step = 1000, width = "180px",
+                  currencySymbol = "£", decimalPlaces = 0
+                ))
+              ),
+              
+              
+              tags$tr(
+                tags$td(tip("Incremental net monetary benefit:", "info")),
+                tags$td(textOutput("inmb_text"))
+              ),
+              
+              
+              tags$tr(
+                tags$td(tip("Atkinson inequality aversion", tipId = "implicit_weight")),
+                tags$td(
+                  div(
+                    class="d-flex",
+                    actionButton("eip_aversion_minus","-"),
+                  autonumericInput(
+                  "eip_aversion",label = NULL, 
+                  1, min = 0, max = 20,
+                  step = 0.5, width = "180px",
+                  readOnly = T
+                  ),
+                  actionButton("eip_aversion_plus","+"),
+                  ),
+              )),
+              
+              
+              tags$tr(
+                tags$td(tip("Weighted ICER", "info")),
+                tags$td(textOutput("weighted_icer"))
+              ),
+              
+              
+              tags$tr(
+                tags$td(tip("Weighted iNMB", "info")),
+                tags$td(textOutput("weighted_inmb"))
+              ),
+              
+              
+              
+            ),
+            
+            
+            # div(
+            #   class = "d-flex justify-content-between",
+            #   div(tip("Decision threshold", "info")),
+            #   numericInput(
+            #     "eip_threshold",label = NULL, 
+            #     20000, min = 0, max = 500000,
+            #     step = 1000, width = "180px"
+            #     # currencySymbol = "£", decimalPlaces = 0
+            #   ),
+            #   ),
+            
+            
+            div(
+              class="d-flex",
+              div(class="ms-auto pe-2 fw-bold flex-shrink-0 align-bottom","Select plot:"),
+              selectInput(
+                "icer_plane_type",
+                label = NULL,width = "100%",
+                choices = c(
+                  "Equity - net health impact trade-off" = "equityimpact_plot",
+                  "Equity - ICER trade-off " = "icer_equityimpact_plot"
                 ),
-                highchartOutput("netbenefit_plot"),
+                selected = "equityimpact_plot"
               ),
             ),
             
             
+          
+            highchartOutput("plane_plot"),
+            div(class = "ms-auto pb-1", prettySwitch("show_prev", "History", value = T, width = "100px")),
+            textOutput("raw_icer_text"),
             
             
-            tabPanel(
-              title = "Equity-efficiency trade-off", 
-              value = "plane",
-              div(
-                class = "d-flex flex-column",
-                div(class="d-flex justify-content-between align-items-end",
-                    selectInput(
-                      "icer_plane_type",
-                      label = NULL,
-                      choices = c(
-                        "Equity - net health impact trade-off" = "equityimpact_plot",
-                        "Equity - ICER trade-off " = "icer_equityimpact_plot"
-                      ),
-                      selected = "equityimpact_plot"
-                    ),
-                    div(class="pb-1",prettySwitch("show_prev", "History",value = T))
-                ),
-                highchartOutput("plane_plot"), 
-                textOutput("raw_icer_text"),
-                div(
-                  class="d-flex flex-row align-items-end justify-content-evenly",
-                  div(class="px-3",autonumericInput("eip_threshold", tip("Decision threshold","info"),20000,min=0,max=500000,step=1000, width = "180px",currencySymbol = "£",decimalPlaces = 0),),
-                  sliderInput("eip_aversion",tip("Atkinson inequality aversion",tipId = "implicit_weight"),min=0, max=20,value=1,step=0.5),
-                )
-              )
-              # textOutput("implicit_weight_text"),
-            )
-          ) # tabbox end
-        )
+          ), 
+        ),
+            
+        
+        # div(
+        #   id="card-2",
+        #   class = "d-flex flex-column card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2 ",
+        #   style ="min-width: 400px; flex-start: 48%; flex-shrink: 0; flex-grow: 0; width: 50%;",
+        #   tabBox(
+        #     title = NULL,
+        #     selected = "main-tab",
+        #     # The id lets us use input$tabset1 on the server to find the current tab
+        #     id = "tab_box1", 
+        #     width = 12,
+        #     
+        #     tabPanel(
+        #       title = "Net health impact", 
+        #       value = "main-tab",
+        #       
+        #       "EMPTY"
+        #     ),
+        #     
+        #     
+        #     
+        #     
+        #     tabPanel(
+        #       title = "Equity-efficiency trade-off", 
+        #       value = "plane",
+        #       div(
+        #         class = "d-flex flex-column",
+        #         div(class="d-flex justify-content-between align-items-end",
+        #             selectInput(
+        #               "icer_plane_type",
+        #               label = NULL,
+        #               choices = c(
+        #                 "Equity - net health impact trade-off" = "equityimpact_plot",
+        #                 "Equity - ICER trade-off " = "icer_equityimpact_plot"
+        #               ),
+        #               selected = "equityimpact_plot"
+        #             ),
+        #             div(class="pb-1",prettySwitch("show_prev", "History",value = T))
+        #         ),
+        #         highchartOutput("plane_plot"), 
+        #         textOutput("raw_icer_text"),
+        #         div(
+        #           class="d-flex flex-row align-items-end justify-content-evenly",
+        #           div(class="px-3",autonumericInput("eip_threshold", tip("Decision threshold","info"),20000,min=0,max=500000,step=1000, width = "180px",currencySymbol = "£",decimalPlaces = 0),),
+        #           sliderInput("eip_aversion",tip("Atkinson inequality aversion",tipId = "implicit_weight"),min=0, max=20,value=1,step=0.5),
+        #         )
+        #       )
+        #       # textOutput("implicit_weight_text"),
+        #     )
+        #   ) # tabbox end
+        # )
         
         
         
@@ -552,8 +654,7 @@ ui = dashboardPage(
 server = function(input, output, session){
   
   # loading circle progress bar
-  #lapply(c(0.1,0.5,0.75,1),\(x){
-    update_progress(shiny_id = "progress-circle",value = 1)
+  update_progress(shiny_id = "progress-circle",value = 1)
   runjs("setTimeout(()=>{
         let el = document.querySelector('#landing-div');
         if(el === null) return;
@@ -562,12 +663,17 @@ server = function(input, output, session){
             el.parentNode.removeChild(el);
         }, 1000);
   },3200)")
-  # })
   
+  # hide cards at start if no model is ran
   runjs("
         document.querySelector('#card-1').style.visibility = 'hidden';
         document.querySelector('#card-2').style.visibility = 'hidden';
         ")
+  
+  # trigger run in debug mode
+  if(HIDE_LOADING_SCREEN){
+    runjs("document.querySelector('#run').click()")
+  }
   
   # activate tooltips
   runjs("
@@ -984,8 +1090,33 @@ server = function(input, output, session){
       formatC(as.numeric(isolate(inequality_table_nb_raw1()$Value[1])),digits = 0,format = "f",big.mark = "," )
     })
     
+    # ICER for results
+    R$baseICER = isolate(baseICER())
+    output$icer_text2 <- renderText({
+      if(R$baseICER=="dominant") {
+        paste0("Dominating")
+      } else if(R$baseICER=="dominated") {
+        paste0("Dominated")
+      } else {
+        paste0("£",R$baseICER,"/QALY")
+      }
+    })
+    # for inmb
+    R$incC =  input$incCost_c1
+    R$incQ =  input$incQALYs_c1
     
-    
+    # prepare distributional health impact table
+    table_inputs = isolate(table_inputSummary(distPrev(),distUtil1(),distIncQALY(),distHOC()))
+    names(table_inputs)[1] = "x"
+    table = cbind(table_inputs,"Total" = c(1,NA,NA,1))
+    table_ext = isolate(table_recipients(recipients_table_raw1()))
+    names(table_ext)[1] = "x"
+    table = rbind(table, table_ext)      
+    table_outcomes = isolate(table_netbenefit(netbenefit_table_raw1()))
+    names(table_outcomes)[1] = "x"
+    table = rbind(table, table_outcomes)
+    names(table)[1] = ""
+    R$dhi_table = table
     
     # Net benefit tab ---------------------------------------------------------
     output$netbenefit_table =renderDataTable(server = F, {
@@ -993,16 +1124,6 @@ server = function(input, output, session){
         
         
         # elaborate reformatting - needs refactoring
-        table_inputs = isolate(table_inputSummary(distPrev(),distUtil1(),distIncQALY(),distHOC()))
-        names(table_inputs)[1] = "x"
-        table = cbind(table_inputs,"Total" = c(1,NA,NA,1))
-        table_ext = isolate(table_recipients(recipients_table_raw1()))
-        names(table_ext)[1] = "x"
-        table = rbind(table, table_ext)      
-        table_outcomes = isolate(table_netbenefit(netbenefit_table_raw1()))
-        names(table_outcomes)[1] = "x"
-        table = rbind(table, table_outcomes)
-        names(table)[1] = ""
         table[1,2:7] = paste0(round(as.numeric(table[1,2:7])*100,0),"%")
         table[2,2:6] = paste0(round(as.numeric(table[2,2:6])*100,0),"%")
         table[2,1] = "Uptake" 
@@ -1106,29 +1227,29 @@ server = function(input, output, session){
       
       plot_df <- isolate(netbenefit_table_raw1())
       # add recipients
-      recipeints_df = isolate(recipients_table_raw1())
-      plot_df <- merge(plot_df,recipeints_df, by = "imd")
+      # recipeints_df = isolate(recipients_table_raw1())
+      # plot_df <- merge(plot_df,recipeints_df, by = "imd")
       plot_df$imd_str = c("IMD 1<br>(Most deprived)","IMD 2","IMD 3", "IMD 4", "IMD 5<br>(Least deprived)")
       plot_df$cols = imdCols()
+      plot_df$cols = substr(plot_df$cols,1,7)
       
-      zeroLine = data.frame(var = 0, imd_str = plot_df$imd_str) 
+      zeroLine = data.frame(var = 0, imd_str = plot_df$imd_str)
       
+      table_vars = c(
+        "Proportion" = "Eligible population",
+        "Proportion" =  "Uptake rate",
+        "Incremental QALYs/person" = "Incremental QALYs/person",
+        "Proportion" =  "Share of opportunity costs",
+        "Proportion" =  "Proportion of recipients",
+        "Number of recipients" = "Number of recipients",
+        "Quality-adjusted Life Years" = "Intervention benefit",
+        "Quality-adjusted Life Years" = "Intervention opportunity costs",                     
+        "Quality-adjusted Life Years" = "Net health benefit"
+      )
       
-      
-      if(input$netbenefit_plot_type == "benefits"){
-        plot_df$var = plot_df$qalys
-        lab = "QALYs"
-      } else if (input$netbenefit_plot_type == "costs"){
-        plot_df$var = -plot_df$hoc
-        lab = "QALYs"
-      } else if (input$netbenefit_plot_type == "recipients"){ 
-        plot_df$var = plot_df$recipients_util
-        lab = "Number of recipients"
-      } else {
-        plot_df$var = plot_df$net_qalys
-        lab = "QALYs"
-      }
-      
+      selected_var = table_vars == input$netbenefit_plot_type
+      plot_df$var = t(R$dhi_table[selected_var, 2:6 ])
+      lab = names(table_vars)[selected_var]
       
       highchart() %>%
         
@@ -1149,7 +1270,7 @@ server = function(input, output, session){
             pointWidth=0,
             dataLabels = list(enabled = TRUE)
           )) %>%
-        hc_title(text = lab, align = "center", x=40,y=10,  verticalAlign = 'top', floating = "true", style = list(fontSize = "16px")) %>%
+        # hc_title(text = lab, align = "center", x=40,y=10,  verticalAlign = 'top', floating = "true", style = list(fontSize = "16px")) %>%
         hc_chart(
           style = list(
             fontFamily = "Inter"
@@ -1163,7 +1284,7 @@ server = function(input, output, session){
         ) %>%
         hc_yAxis(
           title  = list(
-            text = "Quality-Adjusted Life Years",
+            text = lab,
             style = "font-weight: 600; font-size: 16px"
           ),
           plotLines = list(
@@ -1370,6 +1491,45 @@ server = function(input, output, session){
   })
   
   
+  # iNMB update  -----
+  observeEvent(list(input$eip_threshold,input$run), {
+    inmb = formatC(c(R$incQ * input$eip_threshold - R$incC),digits = 0, big.mark = ",",format = "f")
+    output$inmb_text <- renderText(paste0("£",inmb))
+  })
+  
+  # update atkinson
+  observeEvent(input$eip_aversion_plus,{
+    val = input$eip_aversion
+    if(val<20){
+      val = val+0.5
+    }
+    updateAutonumericInput(session = session, inputId = "eip_aversion", value = val) 
+  })
+  observeEvent(input$eip_aversion_minus,{
+    val = input$eip_aversion
+    if(val>0){
+      val = val-0.5
+    }
+    updateAutonumericInput(session = session, inputId = "eip_aversion", value = val) 
+  })
+    
+    
+  # weighted icer update  -----
+  observeEvent(list(input$eip_threshold,input$run, input$eip_aversion),ignoreNULL = T, {
+    table = table_atkinson(atkinson_table_raw(),imp_AtWeights,weightedicer_raw(),F)
+    table222 <<- table
+    selected_eip = table[,1] ==   input$eip_aversion
+    weighted_icer = table[selected_eip,3]
+    output$weighted_icer <- renderText({
+      paste0("£",formatC(weighted_icer, digits = 0, format = "f", big.mark = ","),"/QALY")
+    })
+    output$weighted_inmb <- renderText({
+      weighted_incQ = R$incC/weighted_icer
+      weighted_inmb = weighted_incQ * input$eip_threshold - R$incC
+      weighted_inmb = formatC(weighted_inmb,digits = 0, big.mark = ",",format = "f")
+      paste0("£",weighted_inmb)
+      })
+  })
   
   
   # Kolm --------------------------------------------------------------------
@@ -1481,54 +1641,16 @@ server = function(input, output, session){
   )
   
   
-  # observe what tabs users are accessing
-  runjs(
-  '$(document).on("click", "a", function() {
-    let href = $(this).attr("href");
-    if(href === undefined || href === null) return; 
-    if(!href.includes("#shiny-tab-")) return;
-    let sub = href.replace("#shiny-tab-","")
-    Shiny.setInputValue("tabs", sub);
-  });'
-        )
-  tutorial = reactiveVal(F)
+  
   
   observeEvent(input$tutorial_start,{
-    tutorial(T)
-  
-    tutorialObserver = observeEvent(input$tabs,{
-      go = T
-      if(!is.null(input$tutorialEnded)){
-        if(input$tutorialEnded){
-          tutorial(F)
-          tutorialObserver$destroy()
-          go = F
-        }
-      }
-      if(go) {
-        print(input$tabs)
-      }
-    })
+    showModal(modalDialog(
+      title = "Tutorial",size = "l",
+      tags$iframe(width="560", height="315",src="https://www.youtube.com/embed/ScMzIvxBSi4",title="YouTube video player",frameborder="0"),
+      easyClose = TRUE,
+      footer = div(modalButton("Close"),class="border rounded-3")
+    ))
     
-    introjs(
-      session,
-      options = list(
-        "nextLabel"="Next",
-        "prevLabel"="Back",
-        "skipLabel"="Skip"
-        ),
-      events = list(
-        "oncomplete"=I('Shiny.setInputValue("tutorialEnded", true);'),
-        "onexit"=I('Shiny.setInputValue("tutorialEnded", true);'),
-        "onbeforechange" = I("
-        if (this._currentStep==3) 
-          document.querySelector('#cea-tab').parentElement.childNodes[1].click();
-        else if (this._currentStep==5) 
-          document.querySelector('#eligiblity-tab').parentElement.childNodes[1].click();
-        
-        ")
-        )
-    )
   })
   
   

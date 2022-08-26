@@ -1,0 +1,14 @@
+name: dcea
+title: dcea
+username:
+account: r4scharr
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6699889
+bundleId: 6136775
+url: https://r4scharr.shinyapps.io/dcea/
+when: 1658891506.10021
+lastSyncTime: 1658891506.10023
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|NOTES|OLD

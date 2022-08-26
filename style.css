@@ -121,8 +121,13 @@ html, body {
     background-color: #aaaaaa;
     cursor: not-allowed;
 }
-#intPop_c1, #ratioHOC, #incQALYs_c1, #incCost_c1, #eip_threshold {
+#intPop_c1, #ratioHOC, #incQALYs_c1, #incCost_c1, #eip_threshold, #eip_aversion {
   font-size: 1rem !important;
+}
+
+#eip_aversion {
+  background-color: lightgray;
+  cursor: not-allowed;
 }
 
 .shiny-options-group {
@@ -247,6 +252,11 @@ table.dataTable tbody td {
 
 .content-wrapper {
   min-height: 0;
+}
+
+.selectize-dropdown .active {
+  background-color: var(--primary) !important;
+  color: white !important;
 }
 
 
