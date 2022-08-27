@@ -38,24 +38,28 @@ html, body {
   background-color: var(--primary);
 }
 
-.btn-custom, .buttons-html5 {
+.btn-custom {
   background-color: var(--primary);
   color: snow;
 }
-.btn-custom:hover,.buttons-html5:hover, #report_download:hover {
+
+.btn-custom:hover, #report_download:hover {
   color: white !important;
   background-color: var(--primary);
   opacity: 0.85;
 }
-.btn-custom-outline {
+.btn-custom-outline, .buttons-html5  {
   background-color: transparent;
   color: var(--primary);
   border: solid 1px var(--primary);
   border-radius: 5px;
 }
-.btn-custom-outline:hover  {
+.btn-custom-outline:hover, .buttons-html5:hover  {
   color: white !important;
   background-color: var(--primary);
+}
+.buttons-html5 {
+  padding: 2px 7px;
 }
 .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
   border-left-color: var(--primary);
