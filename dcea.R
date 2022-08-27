@@ -11,12 +11,13 @@ library(DT)
 library(knitr)
 library(markdown)
 library(shinyjs)
+library(shinycssloaders)
 source("functions_revised.R")
 # source("inputs.R")
 
 
 # DEV:
-HIDE_LOADING_SCREEN = T
+HIDE_LOADING_SCREEN = F
 
 # rename highchart donwload btn
 lang <- getOption("highcharter.lang")
@@ -48,9 +49,21 @@ ui = dashboardPage(
     ),
     titleWidth = "320px",
     tags$li(
-      class = "dropdown pe-5 text-white fw-bold", 
-      icon("question-circle"),
-      actionLink("tutorial_start","Watch the tutorial")
+      class = "dropdown pe-5 text-white fw-bold d-flex", 
+      div(
+        class = "me-3",
+        icon("info-circle"),
+        actionLink("showAbout","About",class="text-white")
+      ),
+      div(
+        class = "me-3",
+        icon("book"),
+        actionLink("showReferences","References",class="text-white")
+        ),
+      tags$div(
+        icon("question-circle"),
+        actionLink("tutorial_start","Watch the tutorial",class="text-white")
+      )
       )
     ),
   
@@ -147,7 +160,7 @@ ui = dashboardPage(
         introBox(
           data.step = 6, data.intro = "Sixth step of the intro", data.position = "right",
         div(
-          id="prev-sliders-group", class = "mb-3",
+          class = "no-lab-sliders-group mb-3",
           div(class="d-flex align-items-end pe-3", sliderInput("prevQ1", "IMD 1 (Most deprived)",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ1Compt"))),
           div(class="d-flex align-items-end pe-3", sliderInput("prevQ2", "IMD2",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ2Compt"))),
           div(class="d-flex align-items-end pe-3", sliderInput("prevQ3", "IMD3",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ3Compt"))),
@@ -167,11 +180,36 @@ ui = dashboardPage(
         "Uptake", # icon = icon("bar-chart-o",verify_fa=F),
         div(
           id="util-sliders-group",
-          sliderInput("util1Q1", "IMD1 (Most deprived)",100,min=0,step=5,max=100,post = "%"),
-          sliderInput("util1Q2", "IMD2",100,min=0,step=5,max=100,post = "%"),
-          sliderInput("util1Q3", "IMD3",100,min=0,step=5,max=100,post = "%"),
-          sliderInput("util1Q4", "IMD4",100,min=0,step=5,max=100,post = "%"),
-          sliderInput("util1Q5", "IMD5 (Least deprived)",100,min=0,step=5,max=100,post = "%"),
+          class = "no-lab-sliders-group",
+          div(
+            class="d-flex align-items-end pe-1", 
+            sliderInput("util1Q1", "IMD 1 (Most deprived)",100,min=0,step=0.1,max=100,ticks = F),
+            div(class="no-padding w-50",autonumericInput("util1Q1_num",NULL,100,minimumValue = 0, maximumValue = 100,currencySymbol = "%",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1", 
+            sliderInput("util1Q2", "IMD 2",100,min=0,step=0.1,max=100,ticks = F),
+            div(class="no-padding w-50",autonumericInput("util1Q2_num",NULL,100,minimumValue = 0, maximumValue = 100,currencySymbol = "%",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1", 
+            sliderInput("util1Q3", "IMD 3",100,min=0,step=0.1,max=100,ticks = F),
+            div(class="no-padding w-50",autonumericInput("util1Q3_num",NULL,100,minimumValue = 0, maximumValue = 100,currencySymbol = "%",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1", 
+            sliderInput("util1Q4", "IMD 4",100,min=0,step=0.1,max=100,ticks = F),
+            div(class="no-padding w-50",autonumericInput("util1Q4_num",NULL,100,minimumValue = 0, maximumValue = 100,currencySymbol = "%",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1", 
+            sliderInput("util1Q5", "IMD 5 (Least deprived)",100,min=0,step=0.1,max=100,ticks = F),
+            div(class="no-padding w-50",autonumericInput("util1Q5_num",NULL,100,minimumValue = 0, maximumValue = 100,currencySymbol = "%",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          # sliderInput("util1Q2", "IMD2",100,min=0,step=5,max=100,post = "%"),
+          # sliderInput("util1Q3", "IMD3",100,min=0,step=5,max=100,post = "%"),
+          # sliderInput("util1Q4", "IMD4",100,min=0,step=5,max=100,post = "%"),
+          # sliderInput("util1Q5", "IMD5 (Least deprived)",100,min=0,step=5,max=100,post = "%"),
           div(
             class = "px-3 mt-3", 
             div(
@@ -197,11 +235,39 @@ ui = dashboardPage(
       menuItem(
         tabName = "effectiveness",
         "Effectiveness", # icon = icon("bar-chart-o",verify_fa=F),
-        sliderInput("qaly1Q1", "IMD1 (Most deprived)",1,min=0,max=10,step=0.25, post = "x"),
-        sliderInput("qaly1Q2", "IMD2",1,min=0,max=10,step=0.25, post = "x"),
-        sliderInput("qaly1Q3", "IMD3",1,min=0,max=10,step=0.25, post = "x"),
-        sliderInput("qaly1Q4", "IMD4",1,min=0,max=10,step=0.25, post = "x"),
-        sliderInput("qaly1Q5", "IMD5 (Least deprieved)",1,min=0,max=10,step=0.25, post = "x"),
+        div(
+          class = "no-lab-sliders-group",
+          div(
+            class="d-flex align-items-end pe-1",
+            sliderInput("qaly1Q1", "IMD 1 (Most deprived)",1,min=0,step=0.25,max=5,ticks = F),
+            div(class="no-padding w-50",autonumericInput("qaly1Q1_num",NULL,1,minimumValue = 0, maximumValue = 5,currencySymbol = "x",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1",
+            sliderInput("qaly1Q2", "IMD 2",1,min=0,step=0.1,max=5,ticks = F),
+            div(class="no-padding w-50",autonumericInput("qaly1Q2_num",NULL,1,minimumValue = 0, maximumValue = 5,currencySymbol = "x",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1",
+            sliderInput("qaly1Q3", "IMD 3",1,min=0,step=0.1,max=5,ticks = F),
+            div(class="no-padding w-50",autonumericInput("qaly1Q3_num",NULL,1,minimumValue = 0, maximumValue = 5,currencySymbol = "x",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1",
+            sliderInput("qaly1Q4", "IMD 4",1,min=0,step=0.1,max=5,ticks = F),
+            div(class="no-padding w-50",autonumericInput("qaly1Q4_num",NULL,1,minimumValue = 0, maximumValue = 5,currencySymbol = "x",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+          div(
+            class="d-flex align-items-end pe-1",
+            sliderInput("qaly1Q5", "IMD 5 (Least deprived)",1,min=0,step=0.1,max=5,ticks = F),
+            div(class="no-padding w-50",autonumericInput("qaly1Q5_num",NULL,1,minimumValue = 0, maximumValue = 5,currencySymbol = "x",decimalPlaces = 1, currencySymbolPlacement = "s", width = "100%")),
+          ),
+        # sliderInput("qaly1Q1", "IMD1 (Most deprived)",1,min=0,max=10,step=0.25, post = "x"),
+        # sliderInput("qaly1Q2", "IMD2",1,min=0,max=10,step=0.25, post = "x"),
+        # sliderInput("qaly1Q3", "IMD3",1,min=0,max=10,step=0.25, post = "x"),
+        # sliderInput("qaly1Q4", "IMD4",1,min=0,max=10,step=0.25, post = "x"),
+        # sliderInput("qaly1Q5", "IMD5 (Least deprieved)",1,min=0,max=10,step=0.25, post = "x"),
+        ),
         div(
           class = "px-3 mt-3", 
           div(
@@ -282,6 +348,29 @@ ui = dashboardPage(
     tags$head(tags$link(rel="shortcut icon", href="york_mini.png")),
     # custom styling css
     includeCSS("style.css"),
+    
+    tags$head(
+      # Note the wrapping of the string in HTML()
+      tags$style(HTML("
+      #eip_threshold, #eip_aversion {
+      background-color: white !important;
+      padding: 5px 0;
+      border: none;
+      }
+      #eip_threshold, #eip_aversion {
+      padding:0;
+      }
+      .btn-custom-outline {
+      padding: 0px 0px !important;
+      height: 25px;
+      width: 25px;
+      }
+      table {
+        border-collapse: collapse;
+      };
+      "))
+      ),
+    
     # use shinyjs
     useShinyjs(),
     # use introjs tutorial
@@ -340,17 +429,37 @@ ui = dashboardPage(
       column(
         width = 12,
         
-        class = "d-flex justify-content-center align-items-start mx-auto",
-        # style = "max-width: 1500px;",
+        class = "d-flex flex-wrap flex-sm-wrap flex-md-wrap flex-lg-wrap flex-xl-nowrap justify-content-center align-items-start mx-auto px-5",
+        style = "max-width: 1500px;",
+        
+        # div(
+        #   style = "
+        #   position: absolute; 
+        #   left: 50%;
+        #   top:50%;
+        #   transform: translate(-50%,0) !important;
+        #   z-index: 9999;
+        #   ;",
+        #   class ="w-100 bg-dark",
+        #   div(
+        #     class="spinner-border", 
+        #     style = "width: 10rem; height: 10rem; 
+        #     border: 0.5em solid currentColor;
+        #     border-right-color: transparent;",
+        #     role="status"
+        #   )
+        # ),
         
         # no run?
         conditionalPanel(
           "input.run===0",
+          id="click-prompt",
+          class = "d-flex",
+          style = "position: absolute; height: 75vh; width: calc(100vw - 300px);",
           div(
-            class = "d-flex flex-column justify-content-center flex-fill",
-            style = "position: absolute; height: 75vh; width: calc(100vw - 300px);",
+            class = "d-flex flex-column justify-content-center mx-auto my-auto",
             div(
-              class="w-100 text-secondary fw-light fs-4 px-5 mx-auto text-center my-auto pb-5",
+              class="w-100 text-secondary fw-bold fs-4 px-5 mx-auto text-center my-auto pb-5",
             "Click 'Run Scenario' to assess the health equity impact"
             )
           ),
@@ -360,6 +469,7 @@ ui = dashboardPage(
         div(
           id="card-1",
           class = "card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2",
+          style ="min-width: 400px; max-width: 750px; width: 100%;",
         
           div(
             class = "card-header text-white card-title fs-5",
@@ -367,11 +477,21 @@ ui = dashboardPage(
             "Distributional health impact",
           ),
           
+          
         div(
           class = "d-flex flex-column card-body",
-          style ="min-width: 350px; flex-start: 48%; max-width: 750px;",
           
           div(
+            class = "d-flex flex-column",
+            
+            div(
+              class ="d-flex mt-1 mb-4 border-bottom px-2 pb-3  fs-5",
+              div(class="fw-bold me-3 ms-1", tip("Net health inequality",tip = "This value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "benefit:"),
+              div(
+                class = "fw-bold text-center custom-col",
+                textOutput("sii",inline = T), "QALYs")
+            ),
+            
             div(
               class="d-flex",
               div(class="ms-auto pe-2 fw-bold flex-shrink-0 align-bottom","Select plot:"),
@@ -393,18 +513,29 @@ ui = dashboardPage(
                 selected = "Net health benefit"
               )
             ),
-            highchartOutput("netbenefit_plot"),
+            shinycssloaders::withSpinner(
+              type = 2,
+              color.background = "white",
+              color = "#cb3e72",
+              highchartOutput("netbenefit_plot"),
+            ),
           ),
           
           
           div(
-            style="overflow-x: scroll;",
-            dataTableOutput("netbenefit_table")
+              style="overflow-x: scroll;",
+            shinycssloaders::withSpinner(
+              type = 2,
+              color.background = "white",
+              color = "#cb3e72",
+              dataTableOutput("netbenefit_table",)
+            )
           ),
           
           
           
         ),
+          
         
         ),
         
@@ -416,7 +547,7 @@ ui = dashboardPage(
         div(
           id="card-2",
           class = "card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2",
-          # style ="min-width: 400px; flex-start: 48%; flex-shrink: 0; flex-grow: 0; width: 50%;",
+          style ="min-width: 400px; max-width: 750px; width: 100%;",
           
           div(
             class = "card-header text-white card-title fs-5",
@@ -429,101 +560,88 @@ ui = dashboardPage(
             style = "min-width: 350px; flex-start: 48%; max-width: 750px;",
             
             
-            # div(
-            #   class = "d-flex flex-row align-items-start justify-content-evenly",
-            #   div(
-            #     class = "px-3",
-            #     
-            #   ),
-            #   # sliderInput(
-            #   #   "eip_aversion",
-            #   #   tip("Atkinson inequality aversion", tipId = "implicit_weight"),
-            #   #   min = 0, max = 20, value = 1, step = 0.5
-            #   # ),
-            # ),
             
-            
+            div(class="w-100 border-bottom mb-3 pb-3 d-flex",
+            div(
+              class="px-1 mx-auto w-100", style = "max-width: 600px;",
             tags$table(
-              class = "mx-1 px-3 mb-4 border",
+              class = "equity-table ",
               
               tags$colgroup(
                 tags$col(span=1, width = "70%"),
                 tags$col(span=1, width = "30%"),
               ),
               
+              
               tags$tr(
-                tags$td(class="fw-bold", tip("Net health inequality",tip = "This value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "benefit:"),
+                tags$td("Decision threshold"),
                 tags$td(
-                  class = "custom-col fw-bold px-2 py-1 text-start",
-                  textOutput("sii",inline = T), "QALYs")
+                  div(
+                    class="d-flex px-3 mx-auto align-items-center justify-content-center",
+                    actionButton("eip_threshold_minus","-",class="btn-custom-outline"),
+                    autonumericInput(
+                      "eip_threshold",label = NULL, 
+                      20000, min = 0, max = 500000,
+                      step = 1000, width = "80px",
+                      currencySymbol = "£", decimalPlaces = 0
+                    ),
+                    actionButton("eip_threshold_plus","+",class="btn-custom-outline"),
+                  )
+                )
               ),
-              
-              tags$tr(
-                tags$td("ICER"),
-                tags$td(textOutput("icer_text2",inline = T))
-              ),
-              
-              
-              tags$tr(
-                tags$td(tip("Decision threshold", "info")),
-                tags$td(autonumericInput(
-                  "eip_threshold",label = NULL, 
-                  20000, min = 0, max = 500000,
-                  step = 1000, width = "180px",
-                  currencySymbol = "£", decimalPlaces = 0
-                ))
-              ),
-              
-              
-              tags$tr(
-                tags$td(tip("Incremental net monetary benefit:", "info")),
-                tags$td(textOutput("inmb_text"))
-              ),
-              
               
               tags$tr(
                 tags$td(tip("Atkinson inequality aversion", tipId = "implicit_weight")),
                 tags$td(
                   div(
-                    class="d-flex",
-                    actionButton("eip_aversion_minus","-"),
-                  autonumericInput(
-                  "eip_aversion",label = NULL, 
-                  1, min = 0, max = 20,
-                  step = 0.5, width = "180px",
-                  readOnly = T
+                    class="d-flex px-3 mx-auto align-items-center justify-content-center",
+                    actionButton("eip_aversion_minus","-",class="btn-custom-outline"),
+                    autonumericInput(
+                      "eip_aversion",label = NULL, 
+                      1, min = 0, max = 20,
+                      step = 0.5, width = "80px",
+                      readOnly = T
+                    ),
+                    actionButton("eip_aversion_plus","+",class="btn-custom-outline"),
                   ),
-                  actionButton("eip_aversion_plus","+"),
-                  ),
-              )),
-              
+                )),
               
               tags$tr(
-                tags$td(tip("Weighted ICER", "info")),
-                tags$td(textOutput("weighted_icer"))
+                style = "height: 20px;",
+                tags$td(class="fw-bold", "Naive estimates:")
+                ),
+              
+              tags$tr(
+                tags$td(class="ps-4",tip("ICER", "Incremental cost-effectiveness ratio")),
+                tags$td(class = "text-center", textOutput("icer_text2",inline = T))
+              ),
+              tags$tr(
+                tags$td(class="ps-4",tip("iNMB:", "Incremental net monetary benefit")),
+                tags$td(class = "text-center", textOutput("inmb_text",inline = T))
               ),
               
-              
               tags$tr(
-                tags$td(tip("Weighted iNMB", "info")),
-                tags$td(textOutput("weighted_inmb"))
+                style = "height: 20px;",
+                tags$td(class="fw-bold", "Equity-weighted estimates:")
+              ),
+              
+            
+              tags$tr(
+                tags$td(class="ps-4",tip("Weighted ICER", "Equity-weighted incremental cost-effectiveness ratio")),
+                tags$td(class = "text-center", textOutput("weighted_icer",inline = T))
+              ),
+              tags$tr(
+                tags$td(class="ps-4",tip("Weighted iNMB:", "Equity-weighted incremental net monetary benefit")),
+                tags$td(class = "text-center", textOutput("weighted_inmb", inline = T))
               ),
               
               
               
             ),
+            ),
+            ),
             
             
-            # div(
-            #   class = "d-flex justify-content-between",
-            #   div(tip("Decision threshold", "info")),
-            #   numericInput(
-            #     "eip_threshold",label = NULL, 
-            #     20000, min = 0, max = 500000,
-            #     step = 1000, width = "180px"
-            #     # currencySymbol = "£", decimalPlaces = 0
-            #   ),
-            #   ),
             
             
             div(
@@ -533,16 +651,21 @@ ui = dashboardPage(
                 "icer_plane_type",
                 label = NULL,width = "100%",
                 choices = c(
+                  "CE-plane " = "ce_plane",
                   "Equity - net health impact trade-off" = "equityimpact_plot",
                   "Equity - ICER trade-off " = "icer_equityimpact_plot"
                 ),
-                selected = "equityimpact_plot"
+                selected = "ce_plane"
               ),
             ),
             
             
-          
-            highchartOutput("plane_plot"),
+            shinycssloaders::withSpinner(
+              type = 2,
+              color.background = "white",
+              color = "#cb3e72",
+              highchartOutput("plane_plot",height = "500px"),
+            ),
             div(class = "ms-auto pb-1", prettySwitch("show_prev", "History", value = T, width = "100px")),
             textOutput("raw_icer_text"),
             
@@ -688,6 +811,12 @@ server = function(input, output, session){
     return ['M', x + w * 0.5, y,'L', x + w * 0.5, y + h * 0.7,'M', x + w * 0.3, y + h * 0.5,'L', x + w * 0.5, y + h * 0.7,'L', x + w * 0.7, y + h * 0.5,'M', x, y + h * 0.9,'L', x, y + h,'L', x + w, y + h,'L', x + w, y + h * 0.9];
     };
   ")
+  # avoid line break in sidebar slider input label
+  # for some reason css setting has no effect on label? 
+  runjs("document.querySelector('#util1Q5-label').style.whiteSpace = 'nowrap'")
+  runjs("document.querySelector('#qaly1Q5-label').style.whiteSpace = 'nowrap'")
+  
+  shinyjs::disable("report_download")
   
   # server side rendering of selectize
   updateSelectizeInput(
@@ -819,7 +948,7 @@ server = function(input, output, session){
   distUtil2 <- reactive({
     table = data.frame(
       imd=1:5,
-      util_rate= rep(0,5) # c(input$util2Q1,input$util2Q2,input$util2Q3,input$util2Q4,input$util2Q5))
+      util_rate= rep(0,5) # c(input$util1Q2,input$util2Q2,input$util2Q3,input$util2Q4,input$util2Q5))
     )
   })
   
@@ -928,32 +1057,6 @@ server = function(input, output, session){
   })
   
   
-  # output$input_summary <- renderDataTable({
-  #   
-  #   withProgress(message = 'Loading ...',{
-  #     table = table_inputSummary(distPrev(),distUtil1(),distIncQALY(),distHOC())
-  #     table = cbind(table,"Total" = 0)
-  #     table_ext = table_recipients(recipients_table_raw1())
-  #     names(table_ext)[1] = "Input"
-  #     table = rbind(table, table_ext)
-  #     
-  #     # my_vals = unique(df$ID)
-  #     # my_colors = ifelse(my_vals=='myID','orange','grey')
-  #     
-  #     datatable(
-  #       table,
-  #       style = 'bootstrap',
-  #       rownames = FALSE,
-  #       options = list(paging=FALSE,searching=FALSE,info=FALSE)
-  #       ) 
-  #     # %>% 
-  #     #   formatStyle('ID',
-  #     #     target = 'row',
-  #     #     backgroundColor = styleEqual(my_vals,my_colors)
-  #     #   )
-  #   })
-  # })
-  
   # Non-output version for Markdown report
   input_summary_table <- reactive({
     table_inputSummary(distPrev(),distUtil1(),distIncQALY(),distHOC())
@@ -972,30 +1075,7 @@ server = function(input, output, session){
     table_recipients_raw(distPrev(),distUtil2(),resCEA())
   })
   
-  # Output tables for each scenario
-  # output$recipients_table1 = renderDataTable({
-  #   withProgress(message = 'Loading ...',{
-  #     table = table_recipients(recipients_table_raw1())
-  #     datatable(table,
-  #               style = 'bootstrap',
-  #               rownames = FALSE,
-  #               options = list(paging=FALSE,searching=FALSE,info=FALSE))
-  #   })
-  # })
   
-  
-  # Output plot w/ both scenarios (if selected)
-  # output$recipients_plot = renderPlot({
-  #   print(recipients_table_raw1())
-  #   withProgress(message = 'Loading ...',{
-  #     plot_recipients(
-  #       recipients_table_raw1(),
-  #       recipients_table_raw2(),
-  #       F, #input$choiceUptake2,
-  #       if(input$intName1 == ""){"Smoking Prevention"} else {input$intName1} 
-  #       )
-  #   })
-  # })
   
   
   
@@ -1059,8 +1139,12 @@ server = function(input, output, session){
     runjs("
         document.querySelector('#card-1').style.visibility = 'visible';
         document.querySelector('#card-2').style.visibility = 'visible';
+        document.querySelector('#click-prompt').remove();
         ")
     }
+    
+    
+    
     
     R$scenario = isolate(input$scenario_counter)
     updateTextInput(session,"scenario_counter",value = paste0("#",as.numeric(input$run)+1))
@@ -1120,8 +1204,8 @@ server = function(input, output, session){
     
     # Net benefit tab ---------------------------------------------------------
     output$netbenefit_table =renderDataTable(server = F, {
-      withProgress(message = 'Loading ...',{
-        
+      
+      if(input$run == 0){return(NULL)}
         
         # elaborate reformatting - needs refactoring
         table[1,2:7] = paste0(round(as.numeric(table[1,2:7])*100,0),"%")
@@ -1143,9 +1227,6 @@ server = function(input, output, session){
         table = cbind(table,"s1" = c(rep("F",5),"T",rep("F",3)))
         table = cbind(table,"s2" = c(rep("F",6),rep("T",3)))
         colnames(table)[1] = ""
-        # print(table)
-        # my_vals = c(rep(F,6),T,rep(F,2))
-        # my_style = c(rep("0",6),T,rep("solid 1px red",2))
         
         borderStyle <- "value == 'T' ? 'double black' : value != 'white' ? '' : 'white'"  
         class(borderStyle) <- "JS_EVAL"
@@ -1154,31 +1235,20 @@ server = function(input, output, session){
         
         datatable(
           table,
+          extensions = 'Buttons', 
           style = 'bootstrap',
           class = "hover compact",
           rownames = FALSE,
           options = list(
+            dom = 'frtipB',
+            buttons = c('copy', 'csv', 'excel', 'pdf'),
             paging=F,searching=F,info=F,ordering=F,
             columnDefs = list(list(visible=FALSE, targets=c(7,8)))
           )
         ) %>%
-          formatStyle(
-            "s1",
-            target = 'row',
-            border = borderStyle
-          ) %>%
-          formatStyle(
-            "s2",
-            target = 'row',
-            fontWeight = bgStyle
-          )
+          formatStyle("s1", target = 'row', border = borderStyle) %>%
+          formatStyle("s2", target = 'row', fontWeight = bgStyle)
         
-        
-        # datatable(table,
-        #           style = 'bootstrap',
-        #           rownames = FALSE,
-        #           options = list(paging=FALSE,searching=FALSE,info=FALSE))
-      })
     })
     
     
@@ -1192,6 +1262,8 @@ server = function(input, output, session){
     output$rii_reduction = renderText(formatC(inequality_table$Value[2],digits=6,format = "f"))
     output$ci_reduction = renderText(formatC(inequality_table$Value[3],digits=6,format = "f"))
     
+    
+    Sys.sleep(0.75)
     
   }) # run close
   
@@ -1223,7 +1295,7 @@ server = function(input, output, session){
     
     
     
-    withProgress(message = 'Loading...',{
+    
       
       plot_df <- isolate(netbenefit_table_raw1())
       # add recipients
@@ -1317,25 +1389,11 @@ server = function(input, output, session){
                  }")
             )))
       
-      # return(p1)
       
       
       
       
-      
-      # print("netbenefit_table_raw1()")
-      # print(netbenefit_table_raw1())
-      
-      # if(input$netbenefit_plot_type == 1){
-      #   return(ggplot())
-      # }
-      # 
-      # plot_netbenefit(netbenefit_table_raw1())
-      # 
-      
-      
-      
-    })
+    
   })
   
   
@@ -1366,7 +1424,7 @@ server = function(input, output, session){
   })
   
   output$atkinson_table =renderDataTable({
-    withProgress(message = 'Loading ...',{
+    
       table = table_atkinson(
         atkinson_table_raw(),
         imp_AtWeights,
@@ -1375,21 +1433,80 @@ server = function(input, output, session){
       )
       datatable(table,style = 'bootstrap',rownames = FALSE,
                 options = list(paging=FALSE,searching=FALSE,info=FALSE))
-    })
+    
   })
   
-  output$atkinson_plot =renderPlot({
-    withProgress(message = 'Loading ...',{
+  output$atkinson_plot = renderPlot({
       plot_atkinson(
         atkinson_table_raw(),
         F # input$choiceUptake2
       )
+  })
+  
+  # uptake 2-way reactive inputs: UPTAKE -----
+  utils_input_ids = c("util1Q1","util1Q2","util1Q3","util1Q4","util1Q5")
+  utils_num_input_ids = c("util1Q1_num","util1Q2_num","util1Q3_num","util1Q4_num","util1Q5_num")
+  observeEvent(lapply(utils_input_ids, \(i) input[[i]]),{
+    lapply(seq_along(utils_input_ids),\(i){
+      str = utils_input_ids[i]
+      val_slider = round(input[[utils_input_ids[i]]],1)
+      if(is.null(input[[utils_num_input_ids[i]]])){
+        val_num  = -1
+      } else {
+        val_num = round(input[[utils_num_input_ids[i]]],1)
+        }
+      if(val_num != val_slider)
+      updateAutonumericInput(session,inputId = utils_num_input_ids[i], value = round(input[[utils_input_ids[i]]],1))
     })
   })
+  observeEvent(lapply(utils_num_input_ids, \(i) input[[i]]),{
+    lapply(seq_along(utils_input_ids),\(i){
+      val_slider = round(input[[utils_input_ids[i]]],1)
+      if(is.null(input[[utils_num_input_ids[i]]])){return(NULL)}
+      val_num = round(input[[utils_num_input_ids[i]]],1)
+      if(val_num != val_slider)
+        updateSliderInput(session,inputId = utils_input_ids[i], value = round(input[[utils_num_input_ids[i]]],1))
+    })
+  })
+  # uptake 2-way reactive inputs: EFFECTIVENESS -----
+  effect_input_ids = c("qaly1Q1","qaly1Q2","qaly1Q3","qaly1Q4","qaly1Q5")
+  effect_num_input_ids = c("qaly1Q1_num","qaly1Q2_num","qaly1Q3_num","qaly1Q4_num","qaly1Q5_num")
+  observeEvent(lapply(effect_input_ids, \(i) input[[i]]),{
+    lapply(seq_along(effect_input_ids),\(i){
+      str = effect_input_ids[i]
+      val_slider = round(input[[effect_input_ids[i]]],1)
+      if(is.null(input[[effect_num_input_ids[i]]])){
+        val_num  = -1
+      } else {
+        val_num = round(input[[effect_num_input_ids[i]]],1)
+      }
+      if(val_num != val_slider)
+        updateAutonumericInput(session,inputId = effect_num_input_ids[i], value = round(input[[effect_input_ids[i]]],1))
+    })
+  })
+  observeEvent(lapply(effect_num_input_ids, \(i) input[[i]]),{
+    lapply(seq_along(effect_input_ids),\(i){
+      val_slider = round(input[[effect_input_ids[i]]],1)
+      if(is.null(input[[effect_num_input_ids[i]]])){return(NULL)}
+      val_num = round(input[[effect_num_input_ids[i]]],1)
+      if(val_num != val_slider)
+        updateSliderInput(session,inputId = effect_input_ids[i], value = round(input[[effect_num_input_ids[i]]],1))
+    })
+  })
+
   
   # Equity impact plane -----------------------------------------------------
   
   R <- reactiveValues(old_atkinson=NULL, old_atkinson_icer=NULL,run = 0, scenario=NULL)
+  
+  
+  observeEvent(input$icer_plane_type,{
+    if(input$icer_plane_type=="ce_plane"){
+      shinyjs::disable("show_prev")
+    } else {
+      shinyjs::enable("show_prev")
+    }
+  })
   
   output$plane_plot = renderHighchart({
     
@@ -1409,7 +1526,30 @@ server = function(input, output, session){
       return(p_error)
     }
     
-    withProgress(message = 'Loading ...',{
+    
+    if(input$icer_plane_type == "ce_plane"){
+      
+       # isolate(R$old_atkinson)
+      cost = R$incC
+      qalys = R$incQ
+      thresh = input$eip_threshold
+      
+      table = table_atkinson(atkinson_table_raw(),imp_AtWeights,weightedicer_raw(),F)
+      selected_eip = table[,1] ==   input$eip_aversion
+      weighted_qalys = round(R$incC/table[selected_eip,3],4)
+      
+      max_yval <- abs(cost)*1.5
+      max_xval <- max(c(abs(qalys),abs(weighted_qalys)))*1.5
+      
+      
+      eip = data.frame(qalys = c(qalys,weighted_qalys), cost = cost, name = c("raw","equity weighted"), cols=c("#212529","#cb3e72"))
+      reg_line = data.frame(x=c(-1,1),y=c(-thresh,thresh))
+      
+      p1 = drawCePlane(eip,reg_line,max_yval,max_xval)
+      return(p1)
+    }
+    
+    
       if(input$icer_plane_type == "equityimpact_plot"){
         res = plot_equity_impact(
           isolate(inequality_table_raw1()),
@@ -1454,7 +1594,7 @@ server = function(input, output, session){
       
       return(res$plot)
       
-    })
+    
   })
   
   # Implicit weight warnings
@@ -1497,7 +1637,7 @@ server = function(input, output, session){
     output$inmb_text <- renderText(paste0("£",inmb))
   })
   
-  # update atkinson
+  # update atkinson ------
   observeEvent(input$eip_aversion_plus,{
     val = input$eip_aversion
     if(val<20){
@@ -1512,6 +1652,16 @@ server = function(input, output, session){
     }
     updateAutonumericInput(session = session, inputId = "eip_aversion", value = val) 
   })
+  # update threshold
+  observeEvent(input$eip_threshold_plus,{
+    val = input$eip_threshold
+    updateAutonumericInput(session = session, inputId = "eip_threshold", value = val+5000) 
+  })
+  observeEvent(input$eip_threshold_minus,{
+    val = input$eip_threshold
+    updateAutonumericInput(session = session, inputId = "eip_threshold", value = val-5000) 
+  })
+  
     
     
   # weighted icer update  -----
@@ -1538,7 +1688,7 @@ server = function(input, output, session){
   })
   
   output$kolm_table = renderDataTable({
-    withProgress(message = 'Loading ...',{
+    
       table = table_kolm(
         kolm_table_raw(),
         imp_KmWeights,
@@ -1546,17 +1696,10 @@ server = function(input, output, session){
       )
       datatable(table,style = 'bootstrap',rownames = FALSE,
                 options = list(paging=FALSE,searching=FALSE,info=FALSE))
-    })
+    
   })
   
-  output$kolm_plot =renderPlot({
-    withProgress(message = 'Loading ...',{
-      plot_kolm(
-        kolm_table_raw(),
-        F # input$choiceUptake2
-      )
-    })
-  })
+  output$kolm_plot = renderPlot(plot_kolm(kolm_table_raw(), F))
   
   
   
@@ -1568,6 +1711,118 @@ server = function(input, output, session){
       easyClose = TRUE,
       footer = div(modalButton("Close"),class="border rounded-3")
     ))
+  })
+  
+  
+  observeEvent(input$showAbout,{
+    showModal(modalDialog(size = "l",fade = T,
+                          title = "About",
+                          div(
+                            
+                            div(
+                              h4("About this application"),
+                              HTML("<p>This application was developed by James Love-Koh and Richard Cookson, Centre for
+                  Health Economics, University of York, and Paul Schneider, University of Sheffield, with advisory input from Susan Griffin, Rita Faria 
+                    and Fan Yang. The NICE Project Leads were Lesley Owen and Monica Desai.</p>"
+                              ),
+                              br(),
+                            ),
+                            div(
+                              h4("Acknowledgements"),
+                              HTML("<p>For their helpful and detailed feedback on the draft calculator we would like to 
+                    thank Deborah O’Callaghan, James Lomas, Mike Paulden and the many NICE officials, advisers 
+                    and committee members that we consulted during development.</p>"
+                              ),
+                              br(),
+                            ),
+                            
+                            
+                            
+                            div(
+                              h4("Funding statement"),
+                              HTML("<p>Financial support for this project was provided by the National Institute for Health and Care Excellence (NICE). 
+             All errors and opinions represented in the application are entirely those of development team and
+                  do not reflect those of NICE or the University of York.</p>"
+                                   ),
+                              br(),
+                              ),
+                            
+                            div(
+                              h4("Legal disclaimer"),
+                              HTML("<p>The authors make no representations or warranties of any kind with respect to the
+                  information, graphics and outputs available on this site.</p>"
+                                   ),
+                              br()
+                              )
+                            
+                          
+                          ),
+                          easyClose = TRUE,
+                          footer = div(modalButton("Close"),class="border rounded-3")
+    )
+    )
+  })
+                            
+  
+  observeEvent(input$showReferences,{
+    showModal(modalDialog(size = "l",fade = T,
+      title = "Key references",
+      div(
+               tags$div(
+                 HTML("<p>Below is a list of publications that detail some of the concepts
+                  and methods that have been used to build this calculator.</p>")),br(),
+               h4("Overview of economic evaluation and equity concepts"),
+               HTML("<p>Cookson, R., Griffin, S., Norheim, O.F., Culyer, A.J., 
+           Chalkidou, K., 2020. Distributional Cost-Effectiveness Analysis 
+           Comes of Age. Value in Health, 24(1), 118-120.
+                  "),     
+               tags$a(href="https://doi.org/10.1016/j.jval.2020.10.001","[Link]",target="_blank"),
+               HTML("</p>"),
+               HTML("<p>Cookson, R., Griffin, S., Norheim O.F., Culyer, A.J. (Eds), 2021. 
+           Distributional cost-effectiveness analysis: quantifying health equity 
+           impacts and trade-offs.  Oxford University Press.
+                  "),     
+               tags$a(href="https://www.york.ac.uk/che/publications/books/handbook-dcea/","[Link]",target="_blank"),
+               HTML("</p>"),
+               h4("Distributional cost-effectiveness using aggregate data"),
+               HTML("<p>Griffin, S., Love-Koh, J., Pennington, B., Owen, L., 2019. 
+                  Evaluation of Intervention Impact on Health Inequality for 
+                  Resource Allocation. Medical Decision Making, 39(3), 172–181. 
+                  "),     
+               tags$a(href="https://doi.org/10.1177/0272989X19829726","[Link]",target="_blank"),
+               HTML("</p>"),
+               HTML("<p>Love-Koh, J., Cookson, R., Gutacker, N., Patton, T., Griffin, S., 
+           2019. Aggregate Distributional Cost-Effectiveness Analysis of Health 
+           Technologies. Value in Health, 22(5), 518–526.  
+                  "),     
+               tags$a(href="https://doi.org/10.1016/j.jval.2019.03.006","[Link]",target="_blank"),
+               HTML("</p>"),
+               h4("Distribution of health opportunity costs of NHS expenditure"),
+               HTML("<p>Love-Koh, J., Cookson, R., Claxton, K., Griffin, S., 2020. 
+           Estimating Social Variation in the Health Effects of Changes in Health 
+           Care Expenditure. Medical Decision Making, 40(2), 170–182.
+                  "),     
+               tags$a(href="https://doi.org/10.1177/0272989X20904360","[Link]",target="_blank"),
+               HTML("</p>"),
+               h4("Baseline levels of health inequality"),
+               HTML("<p>Love-Koh, J., Asaria, M., Cookson, R., Griffin, S., 2015. 
+           The Social Distribution of Health: Estimating Quality-Adjusted Life 
+           Expectancy in England. Value in Health, 18(5), 655–662.
+                  "),     
+               tags$a(href="https://doi.org/10.1016/j.jval.2015.03.1784","[Link]",target="_blank"),
+               HTML("</p>"),
+               h4("The inequality staircase effects of health interventions"),
+               HTML("<p>Tugwell, P., de Savigny, D., Hawker, G., Robinson, V., 2006. 
+           Applying clinical epidemiological methods to health equity: the 
+           equity effectiveness loop. BMJ 332, 358–61.
+                  "),     
+               tags$a(href="https://doi.org/10.1136/bmj.332.7537.358","[Link]",target="_blank"),
+               HTML("</p>"),br(),br()
+      ),
+      easyClose = TRUE,
+      footer = div(modalButton("Close"),class="border rounded-3")
+             )
+    )
   })
   
   

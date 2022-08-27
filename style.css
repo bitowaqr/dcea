@@ -38,14 +38,24 @@ html, body {
   background-color: var(--primary);
 }
 
-.btn-custom {
+.btn-custom, .buttons-html5 {
   background-color: var(--primary);
   color: snow;
 }
-.btn-custom:hover, #report_download:hover {
+.btn-custom:hover,.buttons-html5:hover, #report_download:hover {
   color: white !important;
   background-color: var(--primary);
   opacity: 0.85;
+}
+.btn-custom-outline {
+  background-color: transparent;
+  color: var(--primary);
+  border: solid 1px var(--primary);
+  border-radius: 5px;
+}
+.btn-custom-outline:hover  {
+  color: white !important;
+  background-color: var(--primary);
 }
 .skin-blue .sidebar-menu>li.active>a, .skin-blue .sidebar-menu>li:hover>a {
   border-left-color: var(--primary);
@@ -121,9 +131,12 @@ html, body {
     background-color: #aaaaaa;
     cursor: not-allowed;
 }
-#intPop_c1, #ratioHOC, #incQALYs_c1, #incCost_c1, #eip_threshold, #eip_aversion {
+#intPop_c1, #ratioHOC, #incQALYs_c1, #incCost_c1, #eip_threshold, #eip_aversion,
+#util1Q1_num, #util1Q2_num, #util1Q3_num, #util1Q4_num, #util1Q5_num,
+#qaly1Q1_num, #qaly1Q2_num, #qaly1Q3_num, #qaly1Q4_num, #qaly1Q5_num {
   font-size: 1rem !important;
 }
+
 
 #eip_aversion {
   background-color: lightgray;
@@ -144,8 +157,20 @@ html, body {
 .pretty input:checked~.state.p-warning label:after, .pretty.p-toggle .state.p-warning label:after {
     background-color: var(--primary) !important;
 }
+^
 
-#prev-sliders-group .irs-min, #prev-sliders-group .irs-max, #prev-sliders-group .irs-single {
+#qaly1Q1-label, #qaly1Q5-label, #util1Q1-label, #util1Q5-label {
+  white-space: nowrap !important;
+}
+
+.no-padding  .shiny-input-container {
+  padding: 0  5px !important;
+}
+.no-padding   .form-control {
+  padding: 3px  2px !important;
+}
+
+.no-lab-sliders-group .irs-min, .no-lab-sliders-group .irs-max, .no-lab-sliders-group .irs-single {
   display:none;
 }
 
@@ -307,4 +332,19 @@ table.dataTable tbody td {
 }
 .irs--shiny .irs-from, .irs--shiny .irs-to, .irs--shiny .irs-single {
   background-color: var(--primary);
+}
+
+
+.modal-dialog {
+  left: 50vw !important;
+  top: 10vh;
+  transform: translate(-50%,0) !important;
+  padding-bottom: 50px;
+}
+
+  /*border: 1px solid lightgray;*/
+.equity-table td {
+  padding: 5px 5px;
+}
+.equity-table tr {
 }

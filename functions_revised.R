@@ -169,6 +169,7 @@ plot_hoc_dist <- function(dist_hoc, cols = imdCols()) {
     ) %>%
     hc_boost(enabled = FALSE) %>%
     hc_exporting(enabled = FALSE)
+      
   
   return(hoc_plot)
 }
@@ -747,40 +748,27 @@ plot_equity_impact <- function(
       hc_tooltip(
         headerFormat="",
           pointFormat = '<b>{point.name}</b><br>QALYs: {point.x}<br>Net impact: {point.y} QALYs'
-      )# %>%
-      # hc_xAxis(
-      #   categories = dist_hoc$imd_str,
-      #   labels = list(
-      #     style = list(
-      #       color="white"
-      #     ) 
-      #   )
-      # )  %>%
-      # hc_yAxis(
-      #   labels = list(
-      #     style = list(
-      #       color="white"
-      #     ) 
-      #   )
-      # ) %>%
-      # hc_boost(enabled = FALSE) %>%
-      # hc_exporting(enabled = FALSE)
+      ) %>%
+      hc_exporting(
+        enabled = TRUE,
+        formAttributes = list(
+          target = "_blank"
+        ),
+        chartOptions = list(
+          chart = list(
+            backgroundColor = "white"
+          )
+        ),
+        buttons = list(
+          contextButton = list(
+            symbol = "download",
+            verticalAlign = "top",
+            horizontalAlign = "right",
+            onclick = JS("function () {
+                     this.exportChart();
+                 }")
+          )))
     
-    
-    # eip <- ggplot(eip,aes(x=ede,y=net_qalys,group=Uptake)) +
-    #   geom_point(aes(fill=Uptake),size=3,shape=21,colour="black") +
-    #   geom_vline(xintercept=0, colour="black") +
-    #   geom_hline(yintercept=0, colour="black") +
-    #   ylab("Net population health impact (QALYs)") + 
-    #   xlab("Net health equity benefit (Equity-weighted QALYs – QALYs)") + 
-    #   scale_y_continuous(labels=comma,limits=c(-1*max_yval,max_yval)) +
-    #   scale_x_continuous(labels=comma,limits=c(-1*max_xval,max_xval)) +
-    #   theme_classic() + scale_fill_brewer() + scale_colour_brewer() +  
-    #   theme(legend.position="none",axis.line=element_blank(),text=element_text(size=14)) +
-    #   geom_label_repel(size=4.5,aes(label=Uptake,fill=Uptake),colour='black',
-    #                    box.padding=unit(0.5,"lines"),
-    #                    point.padding=unit(0.5,"lines"),show.legend=FALSE)
-  
   return(list(plot=p1, data = atkinson_save))
 }
 
@@ -879,7 +867,26 @@ plot_icer_equity_impact <- function(
     hc_tooltip(
       headerFormat="",
       pointFormat = '<b>{point.name}</b><br>Net health equity impact: {point.x}<br>ICER: {point.y}'
-    )
+    ) %>%
+    hc_exporting(
+      enabled = TRUE,
+      formAttributes = list(
+        target = "_blank"
+      ),
+      chartOptions = list(
+        chart = list(
+          backgroundColor = "white"
+        )
+      ),
+      buttons = list(
+        contextButton = list(
+          symbol = "download",
+          verticalAlign = "top",
+          horizontalAlign = "right",
+          onclick = JS("function () {
+                     this.exportChart();
+                 }")
+        )))
   
   return(list(plot=p1, data = atkinson_save))
   
@@ -1004,3 +1011,98 @@ plot_kolm <- function(kolm_raw,uptake_scenario) {
 
 
 
+# draw simple CE plane
+drawCePlane = function(eip,reg_line,max_yval,max_xval){
+
+p1 = highchart() %>%
+  hc_add_series(
+    data = eip, "scatter",
+    pointPadding = 0, groupPadding= 0.1,
+    # color="var(--primary)",
+    marker = list(enabledThreshold=0,radius=8),
+    hcaes(
+      x=qalys,
+      y=cost,
+      name = name,
+      color = cols
+      # lala = eip$Uptake
+      # color = Uptake
+    ),
+    showInLegend = F,
+    name = ""
+  ) %>%
+  hc_add_series(
+    data = reg_line, "line",
+    pointPadding = 0, groupPadding= 0.1,
+    color="black",
+    hcaes(
+      x=x,
+      y=y,
+      # lala = eip$Uptake
+      # color = Uptake
+    ),
+    showInLegend = F,
+    name = ""
+  ) %>%
+  hc_yAxis(
+    max = max_yval, min= -max_yval,
+    title  = list(
+      text = "Incremental costs",
+      style = list(fontWeight=600, fontSize=16)
+    ),
+    plotLines = list(
+      list(
+        value= 0,
+        width= 2,
+        color = "black",
+        zIndex=1
+      )
+    )
+  ) %>% 
+  hc_xAxis(
+    title  = list(
+      text = "Incremental QALYs",
+      style = list(fontWeight=600, fontSize=16)# font-weight: 600; font-size: 16px"
+    ),
+    max=max_xval,
+    min=-max_xval,
+    gridLineWidth = 1,
+    plotLines = list(
+      list(
+        value= 0,
+        width= 2,
+        color = "black",
+        zIndex=1
+      )
+    )
+  ) %>%
+  hc_chart(
+    style = list(
+      fontFamily = "Inter"
+    )
+  ) %>%
+  hc_tooltip(
+    headerFormat="",
+    pointFormat = '<b>{point.name}</b><br>QALYs: {point.x}<br>Cost: {point.y}'
+  ) %>%
+  hc_exporting(
+    enabled = TRUE,
+    formAttributes = list(
+      target = "_blank"
+    ),
+    chartOptions = list(
+      chart = list(
+        backgroundColor = "white"
+      )
+    ),
+    buttons = list(
+      contextButton = list(
+        symbol = "download",
+        verticalAlign = "top",
+        horizontalAlign = "right",
+        onclick = JS("function () {
+                     this.exportChart();
+                 }")
+      )))
+return(p1)
+}
