@@ -408,7 +408,7 @@ ui = dashboardPage(
         div(
           class="text-white display-5 py-3",
           style ="text-shadow: 2px 2px #222d32;",
-        "Author 1, Author 2, Author 3",
+        "James Love-Koh & Richard Cookson",
         ),
         div(
           class="d-flex flex-row justify-content-center align-items-center",
