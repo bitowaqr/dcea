@@ -1,4 +1,14 @@
+# Shiny app for aggregate distributional cost-effectiveness analysis tool
+# 
+# Created by: 
+#   James Love-Koh
+#   22/10/2020
+# Adapted by: 
+#   Paul Schneider
+#   22/09/2022
 
+
+# Loading packages
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
@@ -12,11 +22,12 @@ library(knitr)
 library(markdown)
 library(shinyjs)
 library(shinycssloaders)
+
+# Source functions
 source("functions_revised.R")
-# source("inputs.R")
+source("report_functions.R")
 
-
-# DEV:
+# Toggle DEV_MODE 
 HIDE_LOADING_SCREEN = F
 
 # rename highchart donwload btn
@@ -24,10 +35,12 @@ lang <- getOption("highcharter.lang")
 lang$contextButtonTitle <- "Download"
 options(highcharter.lang = lang)
 
+# IMD 1-5 colorpallette
 imdCols = function(){
   viridis_pal(begin = 0.3, end = 0.8,option = "magma")(5)
 }
 
+# UI utility function to create and update tooltips
 tip = function(str = "Atkinson inequality aversion", tip = "", tipId = "x" ,sup = "<i class=\"fa fa-question-circle\"></i>", class = "tip-div" ){
   HTML(paste0("<span class=\"",class,"\" id='",tipId,"' data-bs-toggle=\"tooltip\" data-bs-placement=\"top\" title='",tip,"'>",str,"<sup class='sup-tip'>",sup,"</sup></span>"))
 }
@@ -37,9 +50,7 @@ updateTip = function(id, tip){
 
 
 
-
-
-
+# UI ************************* -------
 ui = dashboardPage(
   
   dashboardHeader(
@@ -161,11 +172,11 @@ ui = dashboardPage(
           data.step = 6, data.intro = "Sixth step of the intro", data.position = "right",
         div(
           class = "no-lab-sliders-group mb-3",
-          div(class="d-flex align-items-end pe-3", sliderInput("prevQ1", "IMD 1 (Most deprived)",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ1Compt"))),
-          div(class="d-flex align-items-end pe-3", sliderInput("prevQ2", "IMD2",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ2Compt"))),
-          div(class="d-flex align-items-end pe-3", sliderInput("prevQ3", "IMD3",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ3Compt"))),
-          div(class="d-flex align-items-end pe-3", sliderInput("prevQ4", "IMD4",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ4Compt"))),
-          div(class="d-flex align-items-end pe-3", sliderInput("prevQ5", "IMD5  (Least deprived)",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-3 fw-bold text-decoration-underline",textOutput("prevQ5Compt"))),
+          div(class="d-flex align-items-end pe-3", sliderInput("prevQ1", "IMD 1 (Most deprived)",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-1 fw-bold text-decoration-underline",textOutput("prevQ1Compt"))),
+          div(class="d-flex align-items-end pe-3", sliderInput("prevQ2", "IMD2",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-1 fw-bold text-decoration-underline",textOutput("prevQ2Compt"))),
+          div(class="d-flex align-items-end pe-3", sliderInput("prevQ3", "IMD3",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-1 fw-bold text-decoration-underline",textOutput("prevQ3Compt"))),
+          div(class="d-flex align-items-end pe-3", sliderInput("prevQ4", "IMD4",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-1 fw-bold text-decoration-underline",textOutput("prevQ4Compt"))),
+          div(class="d-flex align-items-end pe-3", sliderInput("prevQ5", "IMD5  (Least deprived)",0.5,min=0,max=1,step=0.01,ticks = F),div(class="pb-1 fw-bold text-decoration-underline",textOutput("prevQ5Compt"))),
           shinyWidgets::prettySwitch("choiceRecPop",label = span(class ="small", "Set custom population shares"),value = F,status = "warning"),
           
         )
@@ -302,18 +313,20 @@ ui = dashboardPage(
       ),
       hr(),
       actionButton("run","Run Scenario",class="btn btn-custom px-5 mx-auto mt-3 fs-5 "),
+      
+      # download btn ------
       div(
         class = "px-5",
-        textInput("scenario_counter","Scenario label",value = "#1",width = "75%")
+      downloadButton("report_download","Download Report", class = "btn-custom mt-2 fs-6 pe-4 py-1"),
       )
-    ),
-    
-    
-    # download btn ------
-    div(
-      class = "mt-auto mx-auto pb-3 pe-2 ",
-      downloadButton("report_download","Download Report", class = "btn-custom")
+        # textInput("scenario_counter","Scenario label",value = "#1",width = "75%")
     )
+    
+    
+    # div(
+    #   class = "mt-auto mx-auto pb-3 pe-2 ",
+    #   downloadButton("report_download","Download Report", class = "btn-custom")
+    # )
     
     
   ),
@@ -323,10 +336,7 @@ ui = dashboardPage(
   # DS BODY ********* -----
   dashboardBody(
     
-    
-    
-    
-    # use bootstrap 5
+    # use bootstrap 5 sintead of shiny default 4
     suppressDependencies("bootstrap"),
     tags$script(
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js",
@@ -344,37 +354,29 @@ ui = dashboardPage(
       rel="stylesheet",
       crossorigin="anonymous"
     ),
-    # york favioon
+    
+    # add york favicon
     tags$head(tags$link(rel="shortcut icon", href="york_mini.png")),
-    # custom styling css
+    
+    # add custom styling css
     includeCSS("style.css"),
     
-    tags$head(
-      # Note the wrapping of the string in HTML()
-      tags$style(HTML("
-      #eip_threshold, #eip_aversion {
-      background-color: white !important;
-      padding: 5px 0;
-      border: none;
-      }
-      #eip_threshold, #eip_aversion {
-      padding:0;
-      }
-      .btn-custom-outline {
-      padding: 0px 0px !important;
-      height: 25px;
-      width: 25px;
-      }
-      table {
-        border-collapse: collapse;
-      };
-      "))
-      ),
     
     # use shinyjs
     useShinyjs(),
+    
+    # loading spinner while report is being built
+    use_busy_spinner(
+      spin_id = "report_spinner",
+      spin =  "self-building-square",
+      color = "#cb3e72",
+      position = "full-page",
+      # height = "250px",
+      width = "250px"
+    ),
+    
     # use introjs tutorial
-    introjsUI(),
+    # introjsUI(),
     
     # loading screen -----
     if(!HIDE_LOADING_SCREEN){
@@ -413,8 +415,12 @@ ui = dashboardPage(
         div(
           class="d-flex flex-row justify-content-center align-items-center",
           div(
-            class="cell mx-auto",
-            tags$img(class ="image", src="york_logo.png")
+            class="cell ms-auto",
+            tags$img(class ="image", src="york_logo.png"),
+          ),
+          div(
+            class="me-auto",
+            tags$img(class ="", src="wellcome.png", width = "150px"),
           ),
         ),
       ),
@@ -426,10 +432,12 @@ ui = dashboardPage(
     
     # BODY ----
     fluidRow(
+      
+      
       column(
         width = 12,
         
-        class = "d-flex flex-wrap flex-sm-wrap flex-md-wrap flex-lg-wrap flex-xl-nowrap justify-content-center align-items-start mx-auto px-5",
+        class = "d-flex flex-wrap flex-sm-wrap flex-md-wrap flex-lg-wrap flex-xl-nowrap justify-content-center align-items-start mx-auto px-3",
         style = "max-width: 1500px;",
         
         # div(
@@ -484,9 +492,19 @@ ui = dashboardPage(
           div(
             class = "d-flex flex-column",
             
+            
+            div(
+              class ="d-flex mt-1 mb-1 px-2 pb-1  fs-5",
+              div(class="fw-bold me-3 ms-1", tip("Net health",tip = "The total gain in healthy years across the whole English population."), "benefit:"),
+              div(
+                class = "fw-bold text-center custom-col",
+                textOutput("nhb",inline = T), "QALYs")
+            ),
+            
+            
             div(
               class ="d-flex mt-1 mb-4 border-bottom px-2 pb-3  fs-5",
-              div(class="fw-bold me-3 ms-1", tip("Net health inequality",tip = "This value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "benefit:"),
+              div(class="fw-bold me-3 ms-1", tip("Net health inequality",tip = "The impact on the inequality gap in healthy years lived between the most and least deprived fifths of the English population. More specifically, the value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "benefit:"),
               div(
                 class = "fw-bold text-center custom-col",
                 textOutput("sii",inline = T), "QALYs")
@@ -666,7 +684,7 @@ ui = dashboardPage(
               color = "#cb3e72",
               highchartOutput("plane_plot",height = "500px"),
             ),
-            div(class = "ms-auto pb-1", prettySwitch("show_prev", "History", value = T, width = "100px")),
+            # div(class = "ms-auto pb-1", prettySwitch("show_prev", "History", value = T, width = "100px")),
             textOutput("raw_icer_text"),
             
             
@@ -674,94 +692,8 @@ ui = dashboardPage(
         ),
             
         
-        # div(
-        #   id="card-2",
-        #   class = "d-flex flex-column card shadow-lg mx-1 mx-sm-1 mx-md-1 mx-lg-3 my-2 ",
-        #   style ="min-width: 400px; flex-start: 48%; flex-shrink: 0; flex-grow: 0; width: 50%;",
-        #   tabBox(
-        #     title = NULL,
-        #     selected = "main-tab",
-        #     # The id lets us use input$tabset1 on the server to find the current tab
-        #     id = "tab_box1", 
-        #     width = 12,
-        #     
-        #     tabPanel(
-        #       title = "Net health impact", 
-        #       value = "main-tab",
-        #       
-        #       "EMPTY"
-        #     ),
-        #     
-        #     
-        #     
-        #     
-        #     tabPanel(
-        #       title = "Equity-efficiency trade-off", 
-        #       value = "plane",
-        #       div(
-        #         class = "d-flex flex-column",
-        #         div(class="d-flex justify-content-between align-items-end",
-        #             selectInput(
-        #               "icer_plane_type",
-        #               label = NULL,
-        #               choices = c(
-        #                 "Equity - net health impact trade-off" = "equityimpact_plot",
-        #                 "Equity - ICER trade-off " = "icer_equityimpact_plot"
-        #               ),
-        #               selected = "equityimpact_plot"
-        #             ),
-        #             div(class="pb-1",prettySwitch("show_prev", "History",value = T))
-        #         ),
-        #         highchartOutput("plane_plot"), 
-        #         textOutput("raw_icer_text"),
-        #         div(
-        #           class="d-flex flex-row align-items-end justify-content-evenly",
-        #           div(class="px-3",autonumericInput("eip_threshold", tip("Decision threshold","info"),20000,min=0,max=500000,step=1000, width = "180px",currencySymbol = "£",decimalPlaces = 0),),
-        #           sliderInput("eip_aversion",tip("Atkinson inequality aversion",tipId = "implicit_weight"),min=0, max=20,value=1,step=0.5),
-        #         )
-        #       )
-        #       # textOutput("implicit_weight_text"),
-        #     )
-        #   ) # tabbox end
-        # )
-        
-        
-        
-        
         
       ),
-      
-      
-      
-      # tabPanel(
-      #   title = "Extended", 
-      #   value = "extended-tab",
-      #   fluidRow(
-      #     column(
-      #       width = 12,
-      #       class = "px-3 py-3",
-      #   h3("Equity impact summary measures"),
-      #   "x",
-      #   "y",
-      #   
-      #   hr(),
-      #   div(
-      #     
-      #     textOutput("noEIP_text"),
-      #     
-      #     
-      #   ),
-      #   div(
-      #     h4("Equity-weighted QALYs"),
-      #     plotOutput("atkinson_plot"), 
-      #     div(dataTableOutput("atkinson_table"), style = "font-size:90%"),
-      #   )
-      #     )
-      #   )
-      #   ),
-      
-      
-      
       
       
       
@@ -774,6 +706,8 @@ ui = dashboardPage(
 )
 
 
+
+# SERVER ************** ------
 server = function(input, output, session){
   
   # loading circle progress bar
@@ -816,7 +750,7 @@ server = function(input, output, session){
   runjs("document.querySelector('#util1Q5-label').style.whiteSpace = 'nowrap'")
   runjs("document.querySelector('#qaly1Q5-label').style.whiteSpace = 'nowrap'")
   
-  shinyjs::disable("report_download")
+  # shinyjs::disable("report_download")
   
   # server side rendering of selectize
   updateSelectizeInput(
@@ -1146,10 +1080,10 @@ server = function(input, output, session){
     
     
     
-    R$scenario = isolate(input$scenario_counter)
-    updateTextInput(session,"scenario_counter",value = paste0("#",as.numeric(input$run)+1))
+    R$scenario = "" # isolate(input$scenario_counter)
+    # updateTextInput(session,"scenario_counter",value = paste0("#",as.numeric(input$run)+1))
     output$intName_txt = renderText(intName())
-    output$scenario_txt = renderText(isolate(input$scenario_counter))
+    # output$scenario_txt = renderText(isolate(input$scenario_counter))
     
     output$noEIP_text <- renderText({ 
       if(indicatorICER()==1) { paste0("",sep="") }
@@ -1169,6 +1103,11 @@ server = function(input, output, session){
       }
     })
     
+    
+    output$nhb = renderText({
+      nhb = isolate(table_netbenefit(netbenefit_table_raw1()))
+      formatC(as.numeric(nhb[3,"Total"]),digits = 0,format = "f",big.mark = "," )
+    })
     
     output$sii = renderText({
       formatC(as.numeric(isolate(inequality_table_nb_raw1()$Value[1])),digits = 0,format = "f",big.mark = "," )
@@ -1228,6 +1167,8 @@ server = function(input, output, session){
         table = cbind(table,"s2" = c(rep("F",6),rep("T",3)))
         colnames(table)[1] = ""
         
+        R$final_dtbl = table
+        
         borderStyle <- "value == 'T' ? 'double black' : value != 'white' ? '' : 'white'"  
         class(borderStyle) <- "JS_EVAL"
         bgStyle = "value == 'T' ? 'bold' : value != '' ? '' : ''"  
@@ -1249,6 +1190,7 @@ server = function(input, output, session){
           formatStyle("s1", target = 'row', border = borderStyle) %>%
           formatStyle("s2", target = 'row', fontWeight = bgStyle)
         
+        
     })
     
     
@@ -1264,6 +1206,11 @@ server = function(input, output, session){
     
     
     Sys.sleep(0.75)
+    
+    if(input$run>0){
+      shinyjs::enable("report_download")
+      R$allow_download = T
+    }
     
   }) # run close
   
@@ -1497,16 +1444,26 @@ server = function(input, output, session){
   
   # Equity impact plane -----------------------------------------------------
   
-  R <- reactiveValues(old_atkinson=NULL, old_atkinson_icer=NULL,run = 0, scenario=NULL)
+  R <- reactiveValues(
+    old_atkinson=NULL, 
+    old_atkinson_icer=NULL,
+    run = 0, 
+    scenario=NULL,
+    allow_download = F
+    )
+  
+  if(!HIDE_LOADING_SCREEN){
+    shinyjs::disable("report_download")
+  } 
   
   
-  observeEvent(input$icer_plane_type,{
-    if(input$icer_plane_type=="ce_plane"){
-      shinyjs::disable("show_prev")
-    } else {
-      shinyjs::enable("show_prev")
-    }
-  })
+  # observeEvent(input$icer_plane_type,{
+  #   if(input$icer_plane_type=="ce_plane"){
+  #     shinyjs::disable("show_prev")
+  #   } else {
+  #     shinyjs::enable("show_prev")
+  #   }
+  # })
   
   output$plane_plot = renderHighchart({
     
@@ -1562,11 +1519,11 @@ server = function(input, output, session){
           old_atkinsons = isolate(R$old_atkinson),
           scenario_name = isolate(R$scenario),
           internal_counter = isolate(as.numeric(input$run)),
-          show_old = input$show_prev
+          show_old = F # input$show_prev
         )
-        if(input$show_prev){
-          R$old_atkinson = isolate(res$data)
-        }
+        # if(input$show_prev){
+        #   R$old_atkinson = isolate(res$data)
+        # }
       }
       
       
@@ -1583,11 +1540,11 @@ server = function(input, output, session){
             old_atkinsons = isolate(R$old_atkinson_icer),
             scenario_name = isolate(R$scenario),
             internal_counter = isolate(as.numeric(input$run)),
-            show_old = input$show_prev
+            show_old = F #input$show_prev
           )
-          if(input$show_prev){
-            R$old_atkinson_icer = isolate(res$data)
-          }
+          # if(input$show_prev){
+          #   R$old_atkinson_icer = isolate(res$data)
+          # }
           
         } else { NULL }
       }
@@ -1837,76 +1794,141 @@ server = function(input, output, session){
   })
   
   output$report_download <- downloadHandler(
-    filename = "equity_report.html",
+    filename = "equity_report.docx",
     content = function(file) {
-      alert("Error: not implemented")
-      # Copy the report file to a temporary directory before processing it, in
-      # case we don't have write permissions to the current working dir (which
-      # can happen when deployed).
-      tempReport <- file.path(tempdir(), "summary_report.Rmd")
-      file.copy("summary_report.Rmd", tempReport, overwrite = TRUE)
       
-      # Set up parameters to pass to Rmd document
-      report_params <- list(intName1 = if(input$intName1 == ""){"Smoking Prevention"} else {input$intName1} ,
-                            ceaResTable = ceaResMD,
-                            rawICER = baseICER_raw,
-                            indICER = indicatorICER,
-                            ineqAv = input$eip_aversion,
-                            
-                            eipCET = input$eip_threshold,
-                            impWeight = implicit_weight,
-                            
-                            ceaRes = resCEA,
-                            ratioHOC = input$ratioHOC,
-                            ratioType = input$ratioType,
-                            inputTab = input_summary_table,
-                            uptakeScen = F , #input$choiceUptake2,
-                            recTab1 = recipients_table_raw1,
-                            recTab2 = recipients_table_raw2,
-                            nbTab1 = netbenefit_table_raw1,
-                            nbTab2 = netbenefit_table_raw2,
-                            weightedICER = weightedicer_raw,
-                            hdistTab1 = healthdistribution_table_raw1,
-                            hdistTab2 = healthdistribution_table_raw2,
-                            ineqTabRaw1 = inequality_table_raw1,
-                            ineqTabRaw2 = inequality_table_raw2,
-                            ineqTab1 = inequality_table1,
-                            ineqTab2 = inequality_table2,
-                            ineqNBTab1 = inequality_table_nb_raw1,
-                            
-                            atTab = atkinson_table_raw,
-                            kmTab = kolm_table_raw,
-                            nComp = input$nComparator,
-                            compName = if(input$compName1 == ""){"No Intervention"} else {input$compName1} ,
-                            # indName = input$indicationName,
-                            codeICD = input$intICD,
-                            codeRF = input$intRF,
-                            codeType = input$intervention_type,
-                            impWeightsAt = imp_AtWeights
+      if(!R$allow_download & !HIDE_LOADING_SCREEN){
+        alert("Error: no data available. Please first run a scenario.")
+        return(NULL)
+      }
+      
+      input_names <-  c(
+        'run',
+        
+        'intName1' ,"compName1",
+        
+        'incQALYs_c1' , "incCost_c1",
+        
+      "intICD","intRF",'intervention_type',
+      'age_range',
+      "intPop_c1",
+      
+      'util1Q1','util1Q2','util1Q3','util1Q4','util1Q5',  
+      'qaly1Q1','qaly1Q2','qaly1Q3','qaly1Q4','qaly1Q5', 
+      'choiceRecPop' , 
+      'prevQ1','prevQ2','prevQ3','prevQ4','prevQ5',
+      
+      'choiceHOC',"ratioHOC",
+      
+      'eip_aversion','eip_threshold'
       )
       
-      # Knit the document, passing in the `params` list, and eval it in a
-      # child of the global environment (this isolates the code in the document
-      # from the code in this app).
-      rmarkdown::render(tempReport,output_file = file,
-                        params=report_params,
-                        envir = new.env(parent = globalenv())
+      
+      input_values <- lapply(input_names,\(x) input[[x]])
+      
+      # show loading spinner
+      show_spinner(spin_id = "report_spinner")
+      
+      tempReport <- file.path(tempdir(), "template.Rmd")
+      file.copy("template.Rmd", tempReport, overwrite = TRUE)
+      
+      
+      isolate({
+        cost = R$incC
+        qalys = R$incQ
+        thresh = input$eip_threshold
+        table = table_atkinson(atkinson_table_raw(),imp_AtWeights,weightedicer_raw(),F)
+        selected_eip = table[,1] ==   input$eip_aversion
+        weighted_qalys = round(R$incC/table[selected_eip,3],4)
+        max_yval <- abs(cost)*1.5
+        max_xval <- max(c(abs(qalys),abs(weighted_qalys)))*1.5
+        eip = data.frame(qalys = c(qalys,weighted_qalys), cost = cost, name = c("raw","equity weighted"), cols=c("#212529","#cb3e72"))
+        reg_line = data.frame(x=c(-1,1),y=c(-thresh,thresh))
+        
+        
+        
+      })
+
+      report_ce_plane = rep_draw_ce_plane(eip,reg_line,max_yval,max_xval)
+      
+      intName = isolate(intName())
+      compName = isolate(compName())
+      
+      nhb = isolate(table_netbenefit(netbenefit_table_raw1()))
+      nhb = formatC(as.numeric(nhb[3,"Total"]),digits = 0,format = "f",big.mark = "," )
+      sii = formatC(as.numeric(isolate(inequality_table_nb_raw1()$Value[1])),digits = 0,format = "f",big.mark = "," )
+      
+      report_disthoc_plot = rep_plot_hoc_dist(distHOC()) 
+      plot_df = isolate(netbenefit_table_raw1())
+      dhi_table = isolate(R$dhi_table)
+      report_distr_plots = rep_distr_plots(plot_df, dhi_table)
+      
+      
+      report_equity_nhb_plot = rep_draw_equityimpact_plot(
+        isolate(inequality_table_raw1()),
+        isolate(inequality_table_raw2()),
+        isolate(atkinson_table_raw()),
+        input$eip_aversion,
+        F, # input$choiceUptake2,
+        isolate(intName()),
+        isolate(compName()),
+        old_atkinsons = isolate(R$old_atkinson),
+        scenario_name = isolate(R$scenario),
+        internal_counter = isolate(as.numeric(input$run)),
+        show_old = F 
       )
+      
+      
+      report_equity_icer_plot = rep_draw_icer_equity_plot(
+        isolate(baseICER_raw()),
+        isolate(atkinson_table_raw()),
+        input$eip_aversion,
+        F, # input$choiceUptake2,
+        isolate(intName()),
+        isolate(compName()),
+        input$eip_threshold,
+        old_atkinsons = isolate(R$old_atkinson_icer),
+        scenario_name = isolate(R$scenario),
+        internal_counter = isolate(as.numeric(input$run)),
+        show_old = F #input$show_prev
+      )
+      
+      final_dtbl <- R$final_dtbl
+      
+      report_params <- list(
+        intName = intName,
+        compName = compName,
+        nhb = nhb,
+        sii = sii,
+        disthoc_plot = report_disthoc_plot, 
+        report_distr_plots = report_distr_plots,
+        final_dtbl = final_dtbl,
+        report_ce_plane = report_ce_plane,
+        report_equity_nhb_plot = report_equity_nhb_plot,
+        report_equity_icer_plot = report_equity_icer_plot,
+        input_names = input_names,
+        input_values = input_values
+        )
+      
+      # compile report
+      report = rmarkdown::render(
+        input = tempReport,
+        output_file = file,
+        params = report_params,
+        envir = new.env(parent = globalenv())
+      ) 
+      
+      # remove loading spinner
+      hide_spinner(spin_id = "report_spinner")
+      
+      return(report)
     }
   )
   
   
   
   
-  observeEvent(input$tutorial_start,{
-    showModal(modalDialog(
-      title = "Tutorial",size = "l",
-      tags$iframe(width="560", height="315",src="https://www.youtube.com/embed/ScMzIvxBSi4",title="YouTube video player",frameborder="0"),
-      easyClose = TRUE,
-      footer = div(modalButton("Close"),class="border rounded-3")
-    ))
-    
-  })
+  
   
   
   
