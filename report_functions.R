@@ -1,4 +1,7 @@
 # report functions
+# duplicate plotting functions for creating the report
+# because highchart plots won't be displayed in word
+# (without some hacks) 
 
 rep_plot_hoc_dist <- function(dist_hoc, cols = imdCols()) {
   
@@ -62,31 +65,6 @@ rep_distr_plots = function(
   return(p_res)
 }
 
-
-
-rep_draw_ce_plane = function(eip,reg_line,max_yval,max_xval){
-
-  require(ggplot2)
-
-  p1 = ggplot() +
-    geom_hline(yintercept = 0, col = "gray", size = 0.5) +
-    geom_point(data = eip, aes(x=qalys, y=cost, col = cols)) +
-    geom_line(data=reg_line, aes(x=x,y=y)) +
-    scale_color_manual(
-      values = eip$cols, 
-      labels = c("Raw","Equity-weighted"),
-      name = ""
-      ) +
-    ylab("Incremental costs") +
-    xlab("Incremental QALYs") +
-    theme_minimal() +
-    theme(legend.position = "top") +
-    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(-max_yval,max_yval))
-
-    return(p1)
-}
-
-
 rep_draw_ce_plane = function(eip,reg_line,max_yval,max_xval){
   
   require(ggplot2)
@@ -98,7 +76,7 @@ rep_draw_ce_plane = function(eip,reg_line,max_yval,max_xval){
     geom_line(data=reg_line, aes(x=x,y=y)) +
     scale_color_manual(
       values = eip$cols, 
-      labels = c("Raw","Equity-weighted"),
+      labels = c("ICER"),
       name = ""
     ) +
     ylab("Incremental costs") +
@@ -125,7 +103,7 @@ rep_draw_equityimpact_plot = function(
   show_old = T
 ){
   
-  int_name = paste0(int_name, "<br>", scenario_name)
+  int_name = paste(int_name, scenario_name)
   
   # nhb <- inequality_raw1 %>% bind_rows(inequality_raw2) %>% select(net_qalys) 
   nhb <- inequality_raw1 %>%  select(net_qalys) 
@@ -167,7 +145,7 @@ rep_draw_equityimpact_plot = function(
       labels = c(int_name,comp_name),
       name = ""
     ) +
-    scale_y_continuous(
+    scale_y_reverse(
       name ="Net population health impact (QALYs)",
       labels = scales::label_comma(scale = 1/1000, suffix = "k")
       ) +
@@ -177,7 +155,7 @@ rep_draw_equityimpact_plot = function(
     ) +
     theme_minimal() +
     theme(legend.position = "top") +
-    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(-max_yval,max_yval))
+    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(max_yval,-max_yval))
   
   
   
@@ -203,7 +181,7 @@ rep_draw_icer_equity_plot <- function(
     ) {
   # uptake_choice is ignored
   
-  int_name = paste0(int_name, "<br>", scenario_name)
+  int_name = paste(int_name, scenario_name)
   
   atkinson_save <- atkinson_raw %>% 
     select(ia,ineq_ede1) %>% 

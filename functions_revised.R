@@ -709,6 +709,7 @@ plot_equity_impact <- function(
         name = ""
       ) %>%
       hc_yAxis(
+        reversed = T,  # !
         max = max_yval, min= -max_yval,
         title  = list(
           text = "Net population health impact (QALYs)",
@@ -845,7 +846,7 @@ plot_icer_equity_impact <- function(
     hc_xAxis(
       title  = list(
         text = "Net health equity benefit (Equity-weighted QALYs – QALYs)",
-        style = list(fontWeight=600, fontSize=16)# font-weight: 600; font-size: 16px"
+        style = list(fontWeight=600, fontSize=16)
       ),
       max=max_xval,
       min=-max_xval,
@@ -889,220 +890,127 @@ plot_icer_equity_impact <- function(
         )))
   
   return(list(plot=p1, data = atkinson_save))
-  
-  
-    
-    # eip <- ggplot(eip,aes(x=ede,y=icer,group=Uptake)) +
-    #   geom_point(aes(fill=Uptake),size=3,shape=21,colour="black") +
-    #   geom_vline(xintercept=0,colour="black") +
-    #   geom_hline(yintercept=eip_threshold,colour="black") +
-    #   ylab("Incremental cost-effectiveness ratio") + 
-    #   xlab("Net health equity benefit (Equity-weighted QALYs – QALYs)") + 
-    #   scale_y_reverse(labels=dollar_format(prefix="£"),
-    #                      limits=c(max_yval,0),
-    #                      breaks=seq(-500000,500000,10000)) +
-    #   scale_x_continuous(labels=comma,limits=c(-1*max_xval,max_xval)) +
-    #   theme_classic() + 
-    #   scale_fill_brewer() + scale_colour_brewer() +  
-    #   theme(legend.position="none",axis.line=element_blank(),text=element_text(size=14)) +
-    #   geom_label_repel(size=4.5,aes(label=Uptake,fill=Uptake),colour='black',
-    #                    box.padding=unit(0.5,"lines"),
-    #                    point.padding=unit(0.5,"lines"),show.legend=FALSE)
-  
-  
-  # return(eip)
 }
-
-
-
-# Kolm EDE table
-
-table_kolm_raw <- function(healthdist_raw1,healthdist_raw2) {
-  ede_table <- data.frame(ia=numeric(),
-                          base=numeric(),ede1=numeric(),ede2=numeric())
-  
-  table_raw1 <- healthdist_raw1
-  table_raw2 <- healthdist_raw2
-  
-  netqaly_tot1 <- sum(table_raw1$net_qalys)
-  netqaly_tot2 <- sum(table_raw2$net_qalys)
-  
-  pop_tot <- sum(table_raw1$pop)
-  aversion_range <- seq(0.005,0.25,0.005)
-  
-  for(i in 1:length(aversion_range)) {
-    ede_base <- kolm(table_raw1$qale,table_raw1$pop,aversion_range[i])
-    ede_post1 <- kolm(table_raw1$qale_post,table_raw1$pop,aversion_range[i])
-    ede_post2 <- kolm(table_raw2$qale_post,table_raw2$pop,aversion_range[i])
-    
-    ede_table_row <- data.frame(ia=aversion_range[i],
-                                base=ede_base,ede1=ede_post1,ede2=ede_post2)
-    ede_table <- rbind(ede_table,ede_table_row)
-  }
-  
-  ede_table <- ede_table %>% 
-    mutate(ede_change1=(ede1-base)*pop_tot,ede_change2=(ede2-base)*pop_tot,
-           ineq_ede1=ede_change1-netqaly_tot1,ineq_ede2=ede_change2-netqaly_tot2)
-  return(ede_table)
-}
-
-table_kolm <- function(kolm_raw,imp_weights,uptake_scenario) {
-  ede_table <- kolm_raw 
-  if(uptake_scenario==0) { 
-    ede_table <- ede_table %>% mutate(imp_weight=imp_weights$imp_weight) %>%
-      select(ia,imp_weight,ede_change1,ineq_ede1) %>% 
-      mutate(imp_weight=round(imp_weight,2),
-             ede_change1=round(ede_change1,0),
-             ineq_ede1=round(ineq_ede1,0)) %>%
-      rename(`Equity-weighted QALYs`=ede_change1,
-             `Equity impact`=ineq_ede1,
-             `Inequality aversion`=ia,
-             `Implied weight`=imp_weight)
-  } else {
-    ede_table <- ede_table %>% mutate(imp_weight=imp_weights$imp_weight) %>% 
-      select(ia,imp_weight,ede_change1,ede_change2,ineq_ede1,ineq_ede2) %>%
-      mutate(imp_weight=round(imp_weight,2),
-             ede_change1=round(ede_change1,0),ede_change2=round(ede_change2,0),
-             ineq_ede1=round(ineq_ede1,0),ineq_ede2=round(ineq_ede2,0)) %>%
-      rename(`Equity-weighted QALYs (base case uptake)`=ede_change1,
-             `Equity-weighted QALYs (alternative uptake)`=ede_change2,
-             `Equity impact (base case uptake)`=ineq_ede1,
-             `Equity impact (alternative uptake)`=ineq_ede2,
-             `Inequality aversion`=ia,
-             `Implied weight`=imp_weight)
-  }
-  return(ede_table)
-}
-
-
-# Kolm plot
-
-plot_kolm <- function(kolm_raw,uptake_scenario) {
-  ede_table <- kolm_raw %>% select(ia,ede_change1,ede_change2) %>% 
-    gather(Uptake,"ede",2:3)
-  
-  ede_table$Uptake <- recode(ede_table$Uptake,"ede_change1"="Base case",
-                             "ede_change2"="Alternative") 
-  
-  if(uptake_scenario==0) { 
-    ede_table <- filter(ede_table,Uptake=="Base case")
-    
-    ede_plot <- ggplot(ede_table,aes(x=ia,y=ede,group=Uptake)) +
-      geom_line(aes(color=Uptake),size=1.2) +
-      ylab("Equity-weighted QALYs (population total)") + xlab("Inequality aversion") + 
-      scale_y_continuous(labels=comma) +
-      scale_x_continuous(labels=comma,limits=c(0,NA)) +
-      theme_classic() +
-      theme(legend.position="none",text=element_text(size=14))
-  } else {
-    ede_plot <- ggplot(ede_table,aes(x=ia,y=ede,group=Uptake)) +
-      geom_line(aes(color=Uptake),size=1.2) +
-      ylab("Equity-weighted QALYs (population total)") + xlab("Inequality aversion") + 
-      scale_y_continuous(labels=comma) +
-      scale_x_continuous(labels=comma,limits=c(0,NA)) +
-      theme_classic() +
-      theme(legend.position="bottom",text=element_text(size=14))
-  }
-  return(ede_plot)
-}
-
-
-
-
 
 
 # draw simple CE plane
 drawCePlane = function(eip,reg_line,max_yval,max_xval){
 
-p1 = highchart() %>%
-  hc_add_series(
-    data = eip, "scatter",
-    pointPadding = 0, groupPadding= 0.1,
-    # color="var(--primary)",
-    marker = list(enabledThreshold=0,radius=8),
-    hcaes(
-      x=qalys,
-      y=cost,
-      name = name,
-      color = cols
-      # lala = eip$Uptake
-      # color = Uptake
-    ),
-    showInLegend = F,
-    name = ""
-  ) %>%
-  hc_add_series(
-    data = reg_line, "line",
-    pointPadding = 0, groupPadding= 0.1,
-    color="black",
-    hcaes(
-      x=x,
-      y=y,
-      # lala = eip$Uptake
-      # color = Uptake
-    ),
-    showInLegend = F,
-    name = ""
-  ) %>%
-  hc_yAxis(
-    max = max_yval, min= -max_yval,
-    title  = list(
-      text = "Incremental costs",
-      style = list(fontWeight=600, fontSize=16)
-    ),
-    plotLines = list(
-      list(
-        value= 0,
-        width= 2,
-        color = "black",
-        zIndex=1
+  p1 = highchart() %>%
+    hc_add_series(
+      data = eip, "scatter",
+      pointPadding = 0, groupPadding= 0.1,
+      # color="var(--primary)",
+      marker = list(enabledThreshold=0,radius=8),
+      hcaes(
+        x=qalys,
+        y=cost,
+        name = name,
+        color = cols
+        # lala = eip$Uptake
+        # color = Uptake
+      ),
+      showInLegend = F,
+      name = ""
+    ) %>%
+    hc_add_series(
+      data = reg_line, "line",
+      pointPadding = 0, groupPadding= 0.1,
+      color="black",
+      hcaes(
+        x=x,
+        y=y,
+        # lala = eip$Uptake
+        # color = Uptake
+      ),
+      showInLegend = F,
+      name = ""
+    ) %>%
+    hc_yAxis(
+      max = max_yval, min= -max_yval,
+      title  = list(
+        text = "Incremental costs",
+        style = list(fontWeight=600, fontSize=16)
+      ),
+      plotLines = list(
+        list(
+          value= 0,
+          width= 2,
+          color = "black",
+          zIndex=1
+        )
       )
-    )
-  ) %>% 
-  hc_xAxis(
-    title  = list(
-      text = "Incremental QALYs",
-      style = list(fontWeight=600, fontSize=16)# font-weight: 600; font-size: 16px"
-    ),
-    max=max_xval,
-    min=-max_xval,
-    gridLineWidth = 1,
-    plotLines = list(
-      list(
-        value= 0,
-        width= 2,
-        color = "black",
-        zIndex=1
+    ) %>% 
+    hc_xAxis(
+      title  = list(
+        text = "Incremental QALYs",
+        style = list(fontWeight=600, fontSize=16)# font-weight: 600; font-size: 16px"
+      ),
+      max=max_xval,
+      min=-max_xval,
+      gridLineWidth = 1,
+      plotLines = list(
+        list(
+          value= 0,
+          width= 2,
+          color = "black",
+          zIndex=1
+        )
       )
-    )
-  ) %>%
-  hc_chart(
-    style = list(
-      fontFamily = "Inter"
-    )
-  ) %>%
-  hc_tooltip(
-    headerFormat="",
-    pointFormat = '<b>{point.name}</b><br>QALYs: {point.x}<br>Cost: {point.y}'
-  ) %>%
-  hc_exporting(
-    enabled = TRUE,
-    formAttributes = list(
-      target = "_blank"
-    ),
-    chartOptions = list(
-      chart = list(
-        backgroundColor = "white"
+    ) %>%
+    hc_chart(
+      style = list(
+        fontFamily = "Inter"
       )
-    ),
-    buttons = list(
-      contextButton = list(
-        symbol = "download",
-        verticalAlign = "top",
-        horizontalAlign = "right",
-        onclick = JS("function () {
-                     this.exportChart();
-                 }")
-      )))
-return(p1)
+    ) %>%
+    hc_tooltip(
+      headerFormat="",
+      pointFormat = '<b>{point.name}</b><br>QALYs: {point.x}<br>Cost: {point.y}'
+    ) %>%
+    hc_exporting(
+      enabled = TRUE,
+      formAttributes = list(
+        target = "_blank"
+      ),
+      chartOptions = list(
+        chart = list(
+          backgroundColor = "white"
+        )
+      ),
+      buttons = list(
+        contextButton = list(
+          symbol = "download",
+          verticalAlign = "top",
+          horizontalAlign = "right",
+          onclick = JS("function () {
+                       this.exportChart();
+                   }")
+        )))
+  return(p1)
+}
+
+
+# reformat Net benefit tab
+# (elaborate reformatting - needs refactoring)
+reformatNBT = function(table){
+  table[1,2:7] = paste0(round(as.numeric(table[1,2:7])*100,0),"%")
+  table[2,2:6] = paste0(round(as.numeric(table[2,2:6])*100,0),"%")
+  table[2,1] = "Uptake" 
+  table[3,1] = "Inc. QALY/recipient"
+  table[4,2:7] = paste0(round(as.numeric(table[4,2:7])*100,0),"%")
+  table[5,2:7] = paste0(round(as.numeric(table[5,2:7])*100,0),"%")
+  table[5,1] = "Recipients (share)"
+  table[6,2:7] = formatC(round(as.numeric(table[6,2:7])/1000,0),digits = 0, big.mark = ",", format="f")
+  table[6,1] = "Recipients (in 1,000s)"
+  table = table[c(1:4,6,5,7:9),]
+  table[7,2:7] = formatC(round(as.numeric(table[7,2:7]),0),digits = 0, big.mark = ",", format="f")
+  table[7,1] = "Intervention benefits (QALYs)"
+  table[8,2:7] = formatC(round(as.numeric(table[8,2:7]),0),digits = 0, big.mark = ",", format="f")
+  table[8,1] = "Opportunity costs (QALYs)"
+  table[9,2:7] = formatC(round(as.numeric(table[9,2:7]),0),digits = 0, big.mark = ",", format="f")
+  table[9,1] = "Net health benefit (QALYs)"
+  table = cbind(table,"s1" = c(rep("F",5),"T",rep("F",3)))
+  table = cbind(table,"s2" = c(rep("F",6),rep("T",3)))
+  colnames(table)[1] = ""
+  return(table)
 }

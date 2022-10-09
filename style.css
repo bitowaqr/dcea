@@ -355,7 +355,8 @@ table.dataTable tbody td {
 
 #intPop_c1, #incQALYs_c1, #incCost_c1,
 #util1Q1_num, #util1Q2_num, #util1Q3_num, #util1Q4_num, #util1Q5_num, 
-#qaly1Q1_num, #qaly1Q2_num, #qaly1Q3_num, #qaly1Q4_num, #qaly1Q5_num {
+#qaly1Q1_num, #qaly1Q2_num, #qaly1Q3_num, #qaly1Q4_num, #qaly1Q5_num, 
+#ratioHOC {
   text-align: center !important;
   
 }
