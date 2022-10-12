@@ -709,7 +709,6 @@ plot_equity_impact <- function(
         name = ""
       ) %>%
       hc_yAxis(
-        reversed = T,  # !
         max = max_yval, min= -max_yval,
         title  = list(
           text = "Net population health impact (QALYs)",
@@ -829,6 +828,7 @@ plot_icer_equity_impact <- function(
       name = ""
     ) %>%
     hc_yAxis(
+      reversed = T,  # !
       max = max_yval, min= -max_yval,
       title  = list(
         text = "Incremental cost-effectiveness ratio",

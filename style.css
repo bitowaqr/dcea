@@ -405,3 +405,8 @@ table {
     bottom: -50px;
 }
 
+
+/*   tooltip tweak to fit longer text in */
+.tooltip-inner {
+    max-width: 40ch; 
+}

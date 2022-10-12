@@ -145,7 +145,7 @@ rep_draw_equityimpact_plot = function(
       labels = c(int_name,comp_name),
       name = ""
     ) +
-    scale_y_reverse(
+    scale_y_continuous(
       name ="Net population health impact (QALYs)",
       labels = scales::label_comma(scale = 1/1000, suffix = "k")
       ) +
@@ -155,7 +155,7 @@ rep_draw_equityimpact_plot = function(
     ) +
     theme_minimal() +
     theme(legend.position = "top") +
-    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(max_yval,-max_yval))
+    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(-max_yval,max_yval))
   
   
   
@@ -223,7 +223,7 @@ rep_draw_icer_equity_plot <- function(
       labels = c(int_name,comp_name),
       name = ""
     ) +
-    scale_y_continuous(
+    scale_y_reverse(
       name ="Incremental cost-effectiveness ratio",
       labels = scales::label_comma(scale = 1/1000, suffix = "k")
     ) +
@@ -233,7 +233,7 @@ rep_draw_icer_equity_plot <- function(
     ) +
     theme_minimal() +
     theme(legend.position = "top") +
-    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(-max_yval,max_yval))
+    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(max_yval,-max_yval))
   
   return(p1)
 }

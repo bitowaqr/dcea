@@ -59,7 +59,7 @@ ui = dashboardPage(
       class = "dropdown pe-5 text-white fw-bold d-flex", 
       div(
         class = "me-3",
-        icon("info-circle"),
+        icon("info-circle", verify_fa = FALSE),
         actionLink("showAbout","About",class="text-white")
       ),
       div(
@@ -68,7 +68,7 @@ ui = dashboardPage(
         actionLink("showReferences","References",class="text-white")
         ),
       tags$div(
-        icon("question-circle"),
+        icon("question-circle", verify_fa = FALSE),
         actionLink("tutorial_start","Watch the tutorial",class="text-white")
       )
       )
@@ -390,8 +390,10 @@ ui = dashboardPage(
           div(
             class = "d-flex flex-column justify-content-center mx-auto my-auto",
             div(
-              class="w-100 text-secondary fw-bold fs-4 px-5 mx-auto text-center my-auto pb-5",
-            "Click 'Run Scenario' to assess the health equity impact"
+              class="w-100 text-secondary fw-bold fs-4 px-5 mx-auto text-start my-auto pb-5",
+              tags$p("1 Click 'Run Scenario' to assess the health equity impact."),
+              tags$p("2 Update input parameters."),
+              tags$p("3 Click on 'Run Scenario' again to see updated results.")
             )
           ),
                          ),
@@ -419,7 +421,13 @@ ui = dashboardPage(
             
             div(
               class ="d-flex mt-1 mb-1 px-2 pb-1  fs-5",
-              div(class="fw-bold me-3 ms-1", tip("Net health",tip = "The total gain in healthy years across the whole English population."), "benefit:"),
+              div(
+                class="fw-bold me-3 ms-1", 
+                tip(
+                  str = "Net health",
+                  tip = "The total gain in healthy years across the whole English population."
+                  ), 
+                "benefit:"),
               div(
                 class = "fw-bold text-center custom-col",
                 textOutput("nhb",inline = T), "QALYs")
@@ -428,7 +436,19 @@ ui = dashboardPage(
             
             div(
               class ="d-flex mt-1 mb-4 border-bottom px-2 pb-3  fs-5",
-              div(class="fw-bold me-3 ms-1", tip("Net health inequality",tip = "The impact on the inequality gap in healthy years lived between the most and least deprived fifths of the English population. More specifically, the value represents the modelled difference in net QALY benefit between the most and least deprived IMD group at population level. The measure differs from the observed gap by incorporating information on the net QALY benefits of IMD2-IMD4 using a simple linear regression model."), "benefit:"),
+              div(
+                class="fw-bold me-3 ms-1", 
+                tip(
+                  str = "Net health inequality",
+                  tip = "The impact on the inequality gap in healthy years lived between the most and least 
+                  deprived fifths of the English population. More specifically, the value represents the 
+                  modelled difference in net QALY benefit between the most and least deprived IMD group 
+                  at population level. The measure differs from the observed gap by 
+                  incorporating information on the net QALY benefits of IMD2-IMD4 using 
+                  a simple linear regression model. The current English health inequality gap is about 
+                  130 million healthy years (based on an average gap in health-adjusted life expectancy of 
+                  about 13 times a population of about 10 million."), 
+                "benefit:"),
               div(
                 class = "fw-bold text-center custom-col",
                 textOutput("sii",inline = T), "QALYs")
@@ -593,11 +613,11 @@ ui = dashboardPage(
                 "icer_plane_type",
                 label = NULL,width = "100%",
                 choices = c(
-                  "CE-plane " = "ce_plane",
+                  "Equity - ICER trade-off " = "icer_equityimpact_plot",
                   "Equity - net health impact trade-off" = "equityimpact_plot",
-                  "Equity - ICER trade-off " = "icer_equityimpact_plot"
+                  "CE-plane " = "ce_plane"
                 ),
-                selected = "ce_plane"
+                selected = "icer_equityimpact_plot"
               ),
             ),
             
@@ -1510,7 +1530,7 @@ server = function(input, output, session){
         
         "Intervention disease category (ICD-10)" = "intICD",
         "Intervention risk factor" = "intRF",
-        "Intetvention type" = 'intervention_type',
+        "Intervention type" = 'intervention_type',
         "Age range" = 'age_range',
         "Eligible population" = "intPop_c1",
         
