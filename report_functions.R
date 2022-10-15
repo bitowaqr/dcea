@@ -62,6 +62,16 @@ rep_distr_plots = function(
     p1
   })
   
+  net_heath_plot_indices = (length(p_res)-2):length(p_res)
+  net_health_plot_limits = unlist(lapply(net_heath_plot_indices,\(x){
+    layer_scales(p_res[[x]])$y$range$range
+  }))
+  print("net_health_plot_limits")
+  print(net_health_plot_limits)
+  for(i in net_heath_plot_indices){
+    p_res[[i]] = p_res[[i]] +  coord_cartesian(ylim =c(min(net_health_plot_limits),max(net_health_plot_limits)))
+  }
+  
   return(p_res)
 }
 

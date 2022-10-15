@@ -20,9 +20,12 @@ aboutUi <- function() {
       div(
         h4("About this application"),
         HTML(
-          "<p>This application was developed by James Love-Koh and Richard Cookson, Centre for
-                  Health Economics, University of York, and Paul Schneider, University of Sheffield, with advisory input from Susan Griffin, Rita Faria
-                    and Fan Yang. The NICE Project Leads were Lesley Owen and Monica Desai.</p>"
+          "<p>
+          This application was developed by James Love-Koh and Richard Cookson, Centre for
+          Health Economics, University of York, and Paul Schneider, University of Sheffield, with advisory input from Susan Griffin, Rita Faria
+          and Fan Yang. The NICE Project Leads were Lesley Owen and Monica Desai.
+          </p>
+          "
         ),
         br(),
       ),
@@ -51,8 +54,18 @@ aboutUi <- function() {
       div(
         h4("Legal disclaimer"),
         HTML(
-          "<p>The authors make no representations or warranties of any kind with respect to the
-                  information, graphics and outputs available on this site.</p>"
+          "<p>
+          The authors make no representations or warranties of any kind with respect to the
+          information, graphics and outputs available on this site.
+          </p>
+          <p>
+          &copy; University of York. We are happy for you to use this tool for educational or research purposes so long as you acknowledge the authors. 
+          A suggested citation is:
+          </p>
+          <p>
+          Love-Koh, J, Schneider, P, and Cookson, R.  (2022).  York health equity impact calculator. University of York (https://shiny.york.ac.uk/dceasimple).
+          </p>
+          "
         ),
         br()
       )

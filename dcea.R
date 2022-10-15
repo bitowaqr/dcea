@@ -447,7 +447,7 @@ ui = dashboardPage(
                   incorporating information on the net QALY benefits of IMD2-IMD4 using 
                   a simple linear regression model. The current English health inequality gap is about 
                   130 million healthy years (based on an average gap in health-adjusted life expectancy of 
-                  about 13 times a population of about 10 million."), 
+                  about 13 times a population of about 10 million)."), 
                 "benefit:"),
               div(
                 class = "fw-bold text-center custom-col",
@@ -1246,7 +1246,7 @@ server = function(input, output, session){
       
       
       if(input$icer_plane_type == "icer_equityimpact_plot"){
-        if(isolate(indicatorICER()==1)){
+        
           res = plot_icer_equity_impact(
             isolate(baseICER_raw()),
             isolate(atkinson_table_raw()),
@@ -1260,7 +1260,6 @@ server = function(input, output, session){
             internal_counter = isolate(as.numeric(input$run)),
             show_old = F # input$show_prev
           )
-        } else { NULL }
       }
       
       return(res$plot)
@@ -1462,7 +1461,7 @@ server = function(input, output, session){
   # * weighted icer update  -----
   observeEvent(list(input$eip_threshold,input$run, input$eip_aversion),ignoreNULL = T, {
     table = table_atkinson(atkinson_table_raw(),imp_AtWeights,weightedicer_raw(),F)
-    selected_eip = table[,1] ==   input$eip_aversion
+    selected_eip = table[,1] == input$eip_aversion
     weighted_icer = table[selected_eip,3]
     output$weighted_icer <- renderText({
       paste0("£",formatC(weighted_icer, digits = 0, format = "f", big.mark = ","),"/QALY")

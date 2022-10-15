@@ -340,9 +340,10 @@ table_weightedicer_raw <- function(netbenefit_raw1,netbenefit_raw2,
            cost2=cost2*imp_weight) %>% group_by(ia) %>%
     summarise(qaly1=sum(qaly1),cost1=sum(cost1),qaly2=sum(qaly2),cost2=sum(cost2)) %>%
     ungroup() %>% 
-    mutate(icer1=ifelse(cost1<=0 & qaly1>0,"Dominant", 
-                        ifelse(cost1>0 & qaly1<=0,"Dominated",
-                               round(cost1/qaly1,0))),
+    mutate(icer1=round(cost1/qaly1,0),
+           # ifelse(cost1<=0 & qaly1>0,"Dominant", 
+           # ifelse(cost1>0 & qaly1<=0,"Dominated",
+           #     round(cost1/qaly1,0))),
            icer2=ifelse(cost2<=0 & qaly2>0,"Dominant", 
                         ifelse(cost2>0 & qaly2<=0,"Dominated",
                                round(cost2/qaly2,0)))) %>%
@@ -617,7 +618,6 @@ table_atkinson <- function(atkinson_raw,imp_weights,weightedicer_raw,uptake_scen
 
 
 # Atkinson plot
-
 plot_atkinson <- function(atkinson_raw,uptake_scenario) {
   ede_table <- atkinson_raw %>% select(ia,ede_change1,ede_change2) %>% 
     gather(Uptake,"ede",2:3)
@@ -786,7 +786,6 @@ plot_icer_equity_impact <- function(
     show_old = T
     ) {
   # uptake_choice is ignored
-
   int_name = paste0(int_name, "<br>", scenario_name)
   
   atkinson_save <- atkinson_raw %>% 
@@ -810,8 +809,9 @@ plot_icer_equity_impact <- function(
   
   eip$ede = round(eip$ede)
   eip$icer = round(eip$icer)
-  max_yval <- max(abs(eip$icer))+20000
+  max_yval <- max(abs(eip$icer))#+20000
   max_xval <- max(abs(eip$ede))*1.5
+  neg_icer <- min(eip$icer) <= 0
   
   p1 = highchart() %>%
     hc_add_series(
@@ -829,7 +829,7 @@ plot_icer_equity_impact <- function(
     ) %>%
     hc_yAxis(
       reversed = T,  # !
-      max = max_yval, min= -max_yval,
+      max = max_yval, min= ifelse(neg_icer,-max_yval,0),
       title  = list(
         text = "Incremental cost-effectiveness ratio",
         style = list(fontWeight=600, fontSize=16)
