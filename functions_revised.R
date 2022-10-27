@@ -691,6 +691,8 @@ plot_equity_impact <- function(
     eip$net_qalys <- round(eip$net_qalys)
     max_yval <- max(abs(eip$net_qalys))*1.5
     max_xval <- max(abs(eip$ede))*1.5
+    max_xy = 10*max(c(max_yval,max_xval))
+    reg45_line = data.frame(x=c(-max_xy,max_xy),y=c(-max_xy,max_xy))
     
     p1 = highchart() %>%
       hc_add_series(
@@ -704,6 +706,17 @@ plot_equity_impact <- function(
           name = Uptake,
           # lala = eip$Uptake
           # color = Uptake
+        ),
+        showInLegend = F,
+        name = ""
+      ) %>%
+      hc_add_series(
+        data = reg45_line, "line",
+        pointPadding = 0, groupPadding= 0.1,
+        color="black",
+        hcaes(
+          x=x,
+          y=y,
         ),
         showInLegend = F,
         name = ""
@@ -809,7 +822,7 @@ plot_icer_equity_impact <- function(
   
   eip$ede = round(eip$ede)
   eip$icer = round(eip$icer)
-  max_yval <- max(abs(eip$icer))#+20000
+  max_yval <- max(abs(eip$icer))*2#+20000
   max_xval <- max(abs(eip$ede))*1.5
   neg_icer <- min(eip$icer) <= 0
   
