@@ -692,7 +692,7 @@ plot_equity_impact <- function(
     max_yval <- max(abs(eip$net_qalys))*1.5
     max_xval <- max(abs(eip$ede))*1.5
     max_xy = 10*max(c(max_yval,max_xval))
-    reg45_line = data.frame(x=c(-max_xy,max_xy),y=c(-max_xy,max_xy))
+    reg45_line = data.frame(x=c(-max_xy,max_xy),y=c(max_xy,-max_xy))
     
     p1 = highchart() %>%
       hc_add_series(

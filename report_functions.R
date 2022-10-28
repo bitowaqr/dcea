@@ -147,7 +147,7 @@ rep_draw_equityimpact_plot = function(
   p1 = ggplot(eip) +
     geom_hline(yintercept = 0, col = "gray", size = 0.5) +
     geom_vline(xintercept = 0, col = "gray", size = 0.5) +
-    geom_abline(slope = 1) +
+    geom_abline(slope = -1) +
     geom_point(aes(x=ede,y=net_qalys,col = c("A","B")), size = 2) +
     # geom_point(data = eip, aes(x=qalys, y=cost, col = cols)) +
     # geom_line(data=reg_line, aes(x=x,y=y)) +
