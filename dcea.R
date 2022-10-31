@@ -346,6 +346,9 @@ ui = dashboardPage(
       rel="stylesheet",
       crossorigin="anonymous"
     ),
+    # g-tag
+    if(file.exists("www/google_analytics.html")){tags$head(tags$head(includeHTML("www/google_analytics.html")))},
+    
     
     # add york favicon
     tags$head(tags$link(rel="shortcut icon", href="york_mini.png")),
@@ -593,7 +596,7 @@ ui = dashboardPage(
                 tags$td(class = "text-center", textOutput("weighted_icer",inline = T))
               ),
               tags$tr(
-                tags$td(class="ps-4",tip("Weighted INMB:", "Equity-weighted incremental net monetary benefit per recipient")),
+                tags$td(class="ps-4",tip("Weighted INMB/recipient:", "Equity-weighted incremental net monetary benefit per recipient")),
                 tags$td(class = "text-center", textOutput("weighted_inmb", inline = T))
               ),
               tags$tr(
@@ -1532,7 +1535,7 @@ server = function(input, output, session){
       tryCatch({
       
       input_names <-  c(
-        "Scenario counter" = 'run',
+        # "Scenario counter" = 'run',
         
         "Intervention name" = 'intName1' ,
         "Comparator name" = "compName1",

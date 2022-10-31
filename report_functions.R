@@ -215,9 +215,9 @@ rep_draw_icer_equity_plot <- function(
   
   eip$ede = round(eip$ede)
   eip$icer = round(eip$icer)
-  max_yval <- max(abs(eip$icer))+20000
+  max_yval <- max(abs(eip$icer))*2#+20000
   max_xval <- max(abs(eip$ede))*1.5
-  
+  neg_icer <- min(eip$icer) <= 0
   
   
   
@@ -244,7 +244,7 @@ rep_draw_icer_equity_plot <- function(
     ) +
     theme_minimal() +
     theme(legend.position = "top") +
-    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(max_yval,-max_yval))
+    coord_cartesian(xlim = c(-max_xval,max_xval), ylim= c(max_yval,ifelse(neg_icer,-max_yval,0)))
   
   return(p1)
 }
