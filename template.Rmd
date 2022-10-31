@@ -23,6 +23,7 @@ params:
   eip_aversion: NA
   weighted_icer: NA
   weighted_inmb: NA
+  weighted_inhb: NA
   
 ---
 
@@ -61,6 +62,7 @@ Table: **Table 1**: Main model results
 | Incremental Net Monetary Benefit (INMB) per recipient | **£`r params$inmb`** |
 Equity-weighted ICER | **`r params$weighted_icer`** |
 Equity-weighted INMB | **`r params$weighted_inmb`** | 
+Equity-weighted INHB | **`r params$weighted_inhb`** | 
 
 ****
 

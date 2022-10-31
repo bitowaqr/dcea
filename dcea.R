@@ -67,10 +67,10 @@ ui = dashboardPage(
         icon("book"),
         actionLink("showReferences","References",class="text-white")
         ),
-      tags$div(
-        icon("question-circle", verify_fa = FALSE),
-        actionLink("tutorial_start","Watch the tutorial",class="text-white")
-      )
+      # tags$div(
+      #   icon("question-circle", verify_fa = FALSE),
+      #   actionLink("tutorial_start","Watch the tutorial",class="text-white")
+      # )
       )
     ),
   
@@ -595,6 +595,10 @@ ui = dashboardPage(
               tags$tr(
                 tags$td(class="ps-4",tip("Weighted INMB:", "Equity-weighted incremental net monetary benefit per recipient")),
                 tags$td(class = "text-center", textOutput("weighted_inmb", inline = T))
+              ),
+              tags$tr(
+                tags$td(class="ps-4",tip("Weighted INHB:", "Equity-weighted  population-level incremental net health benefit")),
+                tags$td(class = "text-center", textOutput("weighted_inhb", inline = T))
               ),
               
               
@@ -1460,9 +1464,12 @@ server = function(input, output, session){
   
   # * weighted icer update  -----
   observeEvent(list(input$eip_threshold,input$run, input$eip_aversion),ignoreNULL = T, {
-    table = table_atkinson(atkinson_table_raw(),imp_AtWeights,weightedicer_raw(),F)
+    
+    atkin_raw_ = atkinson_table_raw()
+    table = table_atkinson(atkin_raw_,imp_AtWeights,weightedicer_raw(),F)
     selected_eip = table[,1] == input$eip_aversion
     weighted_icer = table[selected_eip,3]
+    
     output$weighted_icer <- renderText({
       paste0("£",formatC(weighted_icer, digits = 0, format = "f", big.mark = ","),"/QALY")
     })
@@ -1472,6 +1479,12 @@ server = function(input, output, session){
       weighted_inmb = formatC(weighted_inmb,digits = 0, big.mark = ",",format = "f")
       paste0("£",weighted_inmb)
       })
+    
+    output$weighted_inhb <- renderText({
+      weighted_inhb_raw = table[selected_eip,4]
+      weighted_inhb = formatC(weighted_inhb_raw,digits = 0, big.mark = ",",format = "f")
+      paste0(weighted_inhb," QALYs")
+    })
   })
   
   
@@ -1597,6 +1610,10 @@ server = function(input, output, session){
         weighted_inmb_raw = weighted_incQ * thresh - cost
         weighted_inmb = paste0("£",formatC(weighted_inmb_raw,digits = 0, big.mark = ",",format = "f"))
         
+        weighted_inhb_raw = table[selected_eip,4]
+        weighted_inhb = formatC(weighted_inhb_raw,digits = 0, big.mark = ",",format = "f")
+        weighted_inhb = paste0(weighted_inhb," QALYs")
+        
       })
 
       report_ce_plane = rep_draw_ce_plane(eip,reg_line,max_yval,max_xval)
@@ -1656,6 +1673,7 @@ server = function(input, output, session){
         eip_aversion = eip_aversion,
         weighted_icer = weighted_icer,
         weighted_inmb = weighted_inmb,
+        weighted_inhb = weighted_inhb,
         disthoc_plot = report_disthoc_plot, 
         report_distr_plots = report_distr_plots,
         final_dtbl = final_dtbl,
