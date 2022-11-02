@@ -581,7 +581,7 @@ ui = dashboardPage(
                 tags$td(class = "text-center", textOutput("icer_text2",inline = T))
               ),
               tags$tr(
-                tags$td(class="ps-4",tip("INMB:", "Incremental net monetary benefit per recipient")),
+                tags$td(class="ps-4",tip("INMB/recipient:", "Incremental net monetary benefit per recipient")),
                 tags$td(class = "text-center", textOutput("inmb_text",inline = T))
               ),
               

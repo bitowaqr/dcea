@@ -59,7 +59,7 @@ Table: **Table 1**: Main model results
 |   Decision threshold	|  **£`r params$thresh` **	|
 | Atkinson parameter |  **`r params$eip_aversion`** |  
 | Incremental Cost-Effectiveness Ratio (ICER) | **£`r params$icer`/QALY** |
-| Incremental Net Monetary Benefit (INMB) per recipient | **£`r params$inmb`** |
+| Incremental Net Monetary Benefit (INMB)/recipient | **£`r params$inmb`** |
 Equity-weighted ICER | **`r params$weighted_icer`** |
 Equity-weighted INMB/recipient | **`r params$weighted_inmb`** | 
 Equity-weighted INHB | **`r params$weighted_inhb`** | 
