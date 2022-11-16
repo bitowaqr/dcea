@@ -46,7 +46,7 @@ rep_distr_plots = function(
     "Quality-adjusted Life Years" = "Net health benefit"
   )
   
-  p_res = lapply(seq_along(table_vars), \(var_i){
+  p_res = lapply(seq_along(table_vars), function(var_i){
     plot_df$var = t(dhi_table[var_i, 2:6 ])
     lab = names(table_vars)[var_i]
     
@@ -63,7 +63,7 @@ rep_distr_plots = function(
   })
   
   net_heath_plot_indices = (length(p_res)-2):length(p_res)
-  net_health_plot_limits = unlist(lapply(net_heath_plot_indices,\(x){
+  net_health_plot_limits = unlist(lapply(net_heath_plot_indices,function(x){
     layer_scales(p_res[[x]])$y$range$range
   }))
   print("net_health_plot_limits")

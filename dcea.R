@@ -1345,7 +1345,7 @@ server = function(input, output, session){
       } else {
         newVals = distPrev_auto()$prop_prev
       }
-      lapply(seq_along(inputIds),\(i){
+      lapply(seq_along(inputIds),function(i){
         updateSliderInput(session = session, inputId = inputIds[i],value = newVals[i])
       })
       
@@ -1366,8 +1366,8 @@ server = function(input, output, session){
   # *uptake 2-way reactive inputs: UPTAKE -----
   utils_input_ids = c("util1Q1","util1Q2","util1Q3","util1Q4","util1Q5")
   utils_num_input_ids = c("util1Q1_num","util1Q2_num","util1Q3_num","util1Q4_num","util1Q5_num")
-  observeEvent(lapply(utils_input_ids, \(i) input[[i]]),{
-    lapply(seq_along(utils_input_ids),\(i){
+  observeEvent(lapply(utils_input_ids, function(i) input[[i]]),{
+    lapply(seq_along(utils_input_ids),function(i){
       str = utils_input_ids[i]
       val_slider = round(input[[utils_input_ids[i]]],1)
       if(is.null(input[[utils_num_input_ids[i]]])){
@@ -1379,8 +1379,8 @@ server = function(input, output, session){
         updateAutonumericInput(session,inputId = utils_num_input_ids[i], value = round(input[[utils_input_ids[i]]],1))
     })
   })
-  observeEvent(lapply(utils_num_input_ids, \(i) input[[i]]),{
-    lapply(seq_along(utils_input_ids),\(i){
+  observeEvent(lapply(utils_num_input_ids, function(i) input[[i]]),{
+    lapply(seq_along(utils_input_ids),function(i){
       val_slider = round(input[[utils_input_ids[i]]],1)
       if(is.null(input[[utils_num_input_ids[i]]])){return(NULL)}
       val_num = round(input[[utils_num_input_ids[i]]],1)
@@ -1392,8 +1392,8 @@ server = function(input, output, session){
   # *uptake 2-way reactive inputs: EFFECTIVENESS -----
   effect_input_ids = c("qaly1Q1","qaly1Q2","qaly1Q3","qaly1Q4","qaly1Q5")
   effect_num_input_ids = c("qaly1Q1_num","qaly1Q2_num","qaly1Q3_num","qaly1Q4_num","qaly1Q5_num")
-  observeEvent(lapply(effect_input_ids, \(i) input[[i]]),{
-    lapply(seq_along(effect_input_ids),\(i){
+  observeEvent(lapply(effect_input_ids, function(i) input[[i]]),{
+    lapply(seq_along(effect_input_ids),function(i){
       str = effect_input_ids[i]
       val_slider = round(input[[effect_input_ids[i]]],1)
       if(is.null(input[[effect_num_input_ids[i]]])){
@@ -1405,8 +1405,8 @@ server = function(input, output, session){
         updateAutonumericInput(session,inputId = effect_num_input_ids[i], value = round(input[[effect_input_ids[i]]],1))
     })
   })
-  observeEvent(lapply(effect_num_input_ids, \(i) input[[i]]),{
-    lapply(seq_along(effect_input_ids),\(i){
+  observeEvent(lapply(effect_num_input_ids, function(i) input[[i]]),{
+    lapply(seq_along(effect_input_ids),function(i){
       val_slider = round(input[[effect_input_ids[i]]],1)
       if(is.null(input[[effect_num_input_ids[i]]])){return(NULL)}
       val_num = round(input[[effect_num_input_ids[i]]],1)
@@ -1581,7 +1581,7 @@ server = function(input, output, session){
       
       
       
-      input_values <- lapply(input_names,\(x) input[[x]])
+      input_values <- lapply(input_names,function(x) input[[x]])
       
       tempReport <- file.path(tempdir(), "template.Rmd")
       file.copy("template.Rmd", tempReport, overwrite = TRUE)
