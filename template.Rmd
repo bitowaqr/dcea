@@ -24,6 +24,7 @@ params:
   weighted_icer: NA
   weighted_inmb: NA
   weighted_inhb: NA
+  marginal_productivity: NA
   
 ---
 
@@ -54,15 +55,16 @@ Table: **Table 1**: Main model results
 
 |   |   |
 |---	|---	|
-| Net health benefit: 	| **`r params$nhb` QALYs** 	|
-| Net health inequality benefit: | **`r params$sii` QALYs**  	|
-|   Decision threshold	|  **£`r params$thresh` **	|
-| Atkinson parameter |  **`r params$eip_aversion`** |  
+| Net health inequality benefit | **`r params$sii` QALYs**  	|
 | Incremental Cost-Effectiveness Ratio (ICER) | **£`r params$icer`/QALY** |
 | Incremental Net Monetary Benefit (INMB)/recipient | **£`r params$inmb`** |
+| Incremental net health benefit (INHB) 	| **`r params$nhb` QALYs** 	|
 Equity-weighted ICER | **`r params$weighted_icer`** |
 Equity-weighted INMB/recipient | **`r params$weighted_inmb`** | 
 Equity-weighted INHB | **`r params$weighted_inhb`** | 
+|   Decision threshold	|  **£`r params$thresh` **	|
+|   Marginal productivity	|  **£`r params$marginal_productivity` **	|
+| Atkinson parameter |  **`r params$eip_aversion`** |  
 
 ****
 
@@ -121,14 +123,19 @@ kable(
 
 ### Distributional health impact
 
-```{r echo=FALSE, warning=FALSE, fig.height=16, fig.width=14}
-cowplot::plot_grid(plotlist = params$report_distr_plots,nrow = 3)
+
+```{r echo=FALSE, warning=FALSE, fig.height=6, fig.width=14}
+cowplot::plot_grid(plotlist = list(params$report_distr_plots[[1]],NULL,NULL),nrow = 1)
+```
+
+```{r echo=FALSE, warning=FALSE, fig.height=6, fig.width=14}
+cowplot::plot_grid(plotlist = params$report_distr_plots[-1],nrow = 1)
 ```
 
 
 \newpage
 
-### Equity & efficienty
+### Equity & efficiency
 
 ```{r echo=FALSE, warning=FALSE, fig.height=10, fig.width=8}
 

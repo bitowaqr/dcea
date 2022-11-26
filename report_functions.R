@@ -35,20 +35,24 @@ rep_distr_plots = function(
   zeroLine = data.frame(var = 0, imd_str = plot_df$imd_str)
   
   table_vars = c(
-    "Proportion" = "Eligible population",
-    "Proportion" =  "Uptake rate",
-    "Incremental QALYs/person" = "Incremental QALYs/person",
-    "Proportion" =  "Share of opportunity costs",
-    "Proportion" =  "Proportion of recipients",
     "Number of recipients" = "Number of recipients",
     "Quality-adjusted Life Years" = "Intervention benefit",
     "Quality-adjusted Life Years" = "Intervention opportunity costs",                     
     "Quality-adjusted Life Years" = "Net health benefit"
+    # "Proportion" = "Eligible population",
+    # "Proportion" =  "Uptake rate",
+    # "Incremental QALYs/person" = "Incremental QALYs/person",
+    # "Proportion" =  "Share of opportunity costs",
+    # "Proportion" =  "Proportion of recipients",
   )
   
-  p_res = lapply(seq_along(table_vars), function(var_i){
+  dhi_table = dhi_table[6:9,]
+  
+    p_res = lapply(seq_along(table_vars), function(var_i){
     plot_df$var = t(dhi_table[var_i, 2:6 ])
     lab = names(table_vars)[var_i]
+    
+    
     
     p1 = ggplot(data=plot_df, aes(x=imd_str, y=var, fill = imd_str)) +
       geom_hline(yintercept = 0, col = "gray", linetype = "dotted") +
@@ -59,6 +63,10 @@ rep_distr_plots = function(
       xlab("") +
       theme(legend.position = "none") +
       ggtitle(table_vars[var_i])
+    
+    if(max(plot_df$var)>1000){
+      p1 = p1 + scale_y_continuous(labels = scales::comma_format(big.mark = ","))
+    }
     p1
   })
   
