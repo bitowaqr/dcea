@@ -265,12 +265,12 @@ table_inputSummary <- function(dist_prev,dist_util,dist_qaly,dist_hoc) {
   
   inputSummary <- t(as.matrix(inputSummary[,2:5]))
   inputSummary <- as.data.frame(inputSummary)
-  inputSummary <- round(inputSummary,3)
+  inputSummary <- signif(inputSummary,3)
 
   rownames(inputSummary) <- c()
   colnames(inputSummary) <- c("IMD1","IMD2","IMD3","IMD4","IMD5")
-  inputSummary$Input <- c("Share of the eligible population","Uptake rate (base case scenario)",
-                          "Average incremental QALYs per person","Share of health opportunity costs")
+  inputSummary$Input <- c("Share of eligible population","Uptake rate (base case scenario)",
+                          "Average incremental QALYs per person","Share of opportunity costs")
   inputSummary <- inputSummary[,c("Input","IMD1","IMD2","IMD3","IMD4","IMD5")]
   return(inputSummary)
 }
@@ -1009,18 +1009,37 @@ reformatNBT = function(table){
   table[1,2:7] = paste0(round(as.numeric(table[1,2:7])*100,0),"%")
   table[2,2:6] = paste0(round(as.numeric(table[2,2:6])*100,0),"%")
   table[2,1] = "Uptake" 
-  table[3,1] = "Inc. QALY/recipient"
+  table[3, 1] = "Inc. QALY/recipient"
+  # table[3,2:7] = signif(as.numeric(table[3,2:7]), 2)
   table[4,2:7] = paste0(round(as.numeric(table[4,2:7])*100,0),"%")
   table[5,2:7] = paste0(round(as.numeric(table[5,2:7])*100,0),"%")
-  table[5,1] = "Recipients (share)"
-  table[6,2:7] = formatC(round(as.numeric(table[6,2:7])/1000,0),digits = 0, big.mark = ",", format="f")
+  table[5, 1] = "Recipients (share)"
+  vals = as.numeric(table[6,2:7])/1000
+  if(min(vals)>100){
+  table[6,2:7] = formatC(vals,big.mark = ",", format="f", digits = 0)
+   } else {
+   table[6,2:7] = signif(vals, 3)
+  }
   table[6,1] = "Recipients (in 1,000s)"
   table = table[c(1:4,6,5,7:9),]
-  table[7,2:7] = formatC(round(as.numeric(table[7,2:7]),0),digits = 0, big.mark = ",", format="f")
-  table[7,1] = "Intervention benefits (QALYs)"
-  table[8,2:7] = formatC(round(as.numeric(table[8,2:7]),0),digits = 0, big.mark = ",", format="f")
+  vals = signif(as.numeric(table[7, 2:7]), 3)
+  if(min(vals)>1000){
+    vals = formatC(vals, big.mark = ",", format = "f", digits = 0)
+  }
+  table[7,2:7] = vals
+  table[7,1] = "Gross health benefit (QALYs)"
+
+  vals = signif(as.numeric(table[8, 2:7]), 3)
+  if(min(vals)>1000){
+    vals = formatC(vals, big.mark = ",", format = "f", digits = 0)
+  } 
+  table[8,2:7] = vals
   table[8,1] = "Opportunity costs (QALYs)"
-  table[9,2:7] = formatC(round(as.numeric(table[9,2:7]),0),digits = 0, big.mark = ",", format="f")
+  vals = signif(as.numeric(table[9, 2:7]), 3)
+  if(min(vals)>1000){
+    vals = formatC(vals, big.mark = "", format = "f", digits = 0)
+  } 
+  table[9,2:7] = vals
   table[9,1] = "Net health benefit (QALYs)"
   table = cbind(table,"s1" = c(rep("F",5),"T",rep("F",3)))
   table = cbind(table,"s2" = c(rep("F",6),rep("T",3)))

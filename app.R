@@ -88,11 +88,11 @@ ui = dashboardPage(
         tabName = "intervention",
         "Intervention", 
         startExpanded=T,
-          textInput("intName1", "Intervention",NULL,placeholder = "E.g. Smoking prevention"),
+          textInput("intName1", "Intervention",NULL,placeholder = "E.g. Heart medicines"),
           textInput("compName1", "Comparator",NULL,placeholder = "E.g. No intervention"),
           selectInput(
             "intervention_type","Population type",
-            c("Risk factor population","Disease population")
+            c("Disease population","Risk factor population")
             ),
           conditionalPanel(
             condition="input.intervention_type=='Disease population'",
@@ -463,7 +463,7 @@ ui = dashboardPage(
                   "Intervention opportunity costs",                     
                   "Net health benefit"
                 ),
-                selected = "Net health benefit"
+                selected = "Proportion of recipients"
               )
             ),
             shinycssloaders::withSpinner(
@@ -568,10 +568,10 @@ ui = dashboardPage(
                 tags$td(class="ps-4",tip("ICER", "Incremental cost-effectiveness ratio")),
                 tags$td(class = "text-center", textOutput("icer_text2",inline = T))
               ),
-              tags$tr(
-                tags$td(class="ps-4",tip("INMB/recipient:", "Incremental net monetary benefit per recipient")),
-                tags$td(class = "text-center", textOutput("inmb_text",inline = T))
-              ),
+              # tags$tr(
+              #   tags$td(class="ps-4",tip("INMB/recipient:", "Incremental net monetary benefit per recipient")),
+              #   tags$td(class = "text-center", textOutput("inmb_text",inline = T))
+              # ),
               
               
               tags$tr(
@@ -593,14 +593,39 @@ ui = dashboardPage(
                 tags$td(class="ps-4",tip("Weighted ICER", "Equity-weighted incremental cost-effectiveness ratio")),
                 tags$td(class = "text-center", textOutput("weighted_icer",inline = T))
               ),
-              tags$tr(
-                tags$td(class="ps-4",tip("Weighted INMB/recipient:", "Equity-weighted incremental net monetary benefit per recipient")),
-                tags$td(class = "text-center", textOutput("weighted_inmb", inline = T))
-              ),
+              # tags$tr(
+              #   tags$td(class="ps-4",tip("Weighted INMB/recipient:", "Equity-weighted incremental net monetary benefit per recipient")),
+              #   tags$td(class = "text-center", textOutput("weighted_inmb", inline = T))
+              # ),
               tags$tr(
                 tags$td(class="ps-4",tip("Weighted INHB:", "Equity-weighted  population-level incremental net health benefit")),
                 tags$td(class = "text-center", textOutput("weighted_inhb", inline = T))
               ),
+
+
+              tags$tr(
+                style = "height: 20px;",
+                tags$td(class="fw-bold", "ICER Impact:")
+                ),
+              
+              tags$tr(
+                tags$td(class="ps-4",tip("Absolute ICER change", "Absolute difference between the naive and the equity-weighted incremental cost-effectiveness ratio")),
+                tags$td(class = "text-center", textOutput("icer_change_abs_text2",inline = T))
+              ),
+
+
+              tags$tr(
+                tags$td(class="ps-4",tip("Relative ICER change", "Relative difference between the naive and the equity-weighted incremental cost-effectiveness ratio")),
+                tags$td(class = "text-center", textOutput("icer_change_rel_text2",inline = T))
+              ),
+
+
+              tags$tr(
+                tags$td(class="ps-4",tip("Threshold weight", "Threshold weight implied by the equity-weighted incremental cost-effectiveness ratio")),
+                tags$td(class = "text-center", textOutput("thresh_implied_wt_text2",inline = T))
+              ),
+
+              
               
               
               
@@ -697,8 +722,10 @@ server = function(input, output, session){
     session, 
     'intICD', 
     choices = icd10_input_labs, 
+    selected = "I10",
     server = TRUE,
   )
+
 
   
  
@@ -789,7 +816,7 @@ server = function(input, output, session){
   })
   
   intName = eventReactive(input$run, ignoreNULL = F, {
-    if(input$intName1 == ""){"Smoking Prevention"} else {input$intName1}
+    if(input$intName1 == ""){"Heart medicines"} else {input$intName1}
   })
   compName = eventReactive(input$run, ignoreNULL = F, {
     if(input$compName1 == ""){"No Intervention"} else {input$compName1} 
@@ -876,8 +903,7 @@ server = function(input, output, session){
       if(input$run == 0){return(NULL)}
         
         # messy reformatting
-      table = reformatNBT(table)
-        
+        table = reformatNBT(table)  
         R$final_dtbl = table
         # styling
         borderStyle <- "value == 'T' ? 'double black' : value != 'white' ? '' : 'white'"  
@@ -1470,7 +1496,14 @@ server = function(input, output, session){
     table = table_atkinson(atkin_raw_,imp_AtWeights,weightedicer_raw(),F)
     selected_eip = table[,1] == input$eip_aversion
     weighted_icer = table[selected_eip,3]
-    
+
+    # ICER IMPACT    
+    baseICER = isolate(icer_calc_raw(resCEA()))
+    icer_change_abs = weighted_icer - baseICER
+    icer_change_rel = 100 * (weighted_icer - baseICER) / baseICER
+    # THRESHOLD implied weight
+    thresh_implied_wt = 1- (weighted_icer - baseICER) / baseICER
+
     output$weighted_icer <- renderText({
       paste0("£",formatC(weighted_icer, digits = 0, format = "f", big.mark = ","),"/QALY")
     })
@@ -1486,6 +1519,20 @@ server = function(input, output, session){
       weighted_inhb = formatC(weighted_inhb_raw,digits = 0, big.mark = ",",format = "f")
       paste0(weighted_inhb," QALYs")
     })
+
+    output$icer_change_abs_text2 <- renderText({
+      paste0("£", formatC(icer_change_abs, digits = 0, format = "f", big.mark = ","))
+    })
+    
+    output$icer_change_rel_text2 <- renderText({
+      paste0(formatC(icer_change_rel, digits = 1, format = "f", big.mark = ","),"%")
+    })
+
+    output$thresh_implied_wt_text2 <- renderText({
+      paste0("x",formatC(thresh_implied_wt, digits = 2, format = "f", big.mark = ","))
+    })
+
+
   })
   
   
@@ -1593,7 +1640,7 @@ server = function(input, output, session){
       tempTemplate <- file.path(tempdir(), "template.docx")
       file.copy("template.docx", tempTemplate, overwrite = TRUE)
       
-      
+    
       isolate({
         cost = R$incC
         qalys = R$incQ
@@ -1609,9 +1656,21 @@ server = function(input, output, session){
         max_xval <- max(abs(qalys))*1.5
         eip = data.frame(qalys = c(qalys), cost = cost, name = paste0("ICER: £",formatC(cost/qalys, format = "f",digits = 0,big.mark = ","),"/QALY"), cols=c("#212529"))
         
-        icer = formatC(cost/qalys,digits = 0, format = "f",big.mark = ",")
+        icer_raw = cost / qalys
+        icer = formatC(icer_raw, digits = 0, format = "f", big.mark = ",")
+        
         inmb = formatC(c(qalys * thresh - cost),digits = 0, big.mark = ",",format = "f")
-        weighted_icer_raw = table[selected_eip,3]
+        weighted_icer_raw = table[selected_eip, 3]
+        
+        
+        icer_change_abs = weighted_icer_raw - icer_raw
+        icer_change_rel = 100 * (weighted_icer_raw - icer_raw) / icer_raw
+        thresh_implied_wt = 1 - (weighted_icer_raw - icer_raw) / icer_raw
+        icer_change_abs = formatC(icer_change_abs, digits = 0, format = "f", big.mark = ",")
+        icer_change_rel = formatC(icer_change_rel, digits = 0, format = "f", big.mark = ",")
+        thresh_implied_wt = formatC(thresh_implied_wt, digits = 2, format = "f", big.mark = ",")
+
+
         weighted_icer = paste0("£",formatC(weighted_icer_raw, digits = 0, format = "f", big.mark = ","),"/QALY")
         weighted_incQ = cost/weighted_icer_raw
         weighted_inmb_raw = weighted_incQ * thresh - cost
@@ -1670,6 +1729,7 @@ server = function(input, output, session){
       )
       
       final_dtbl <- R$final_dtbl
+
       
       report_params <- list(
         intName = intName,
@@ -1681,6 +1741,9 @@ server = function(input, output, session){
         thresh = formatC(thresh, digits = 0, big.mark = ",", format = "f"),
         eip_aversion = eip_aversion,
         weighted_icer = weighted_icer,
+        icer_change_abs = icer_change_abs,
+        icer_change_rel = icer_change_rel,
+        thresh_implied_wt = thresh_implied_wt,
         weighted_inmb = weighted_inmb,
         weighted_inhb = weighted_inhb,
         disthoc_plot = report_disthoc_plot, 
@@ -1710,12 +1773,12 @@ server = function(input, output, session){
       },
       error = function(e){
           hide_spinner(spin_id = "report_spinner")
-          alert("Error: sorry, something went wrong. The report could not be created.")
+          alert("Error: sorry, something went wrong. Please try again.")
           return(NULL)
       },
       warning = function(w){
         hide_spinner(spin_id = "report_spinner")
-        alert("Error: sorry, something went wrong. The report could not be created.")
+        alert("Error: sorry, something went wrong. Please try again.")
         return(NULL)
       }
     )
@@ -1723,6 +1786,10 @@ server = function(input, output, session){
   )
   
   
+  
+  
+  
+
   
   
   
