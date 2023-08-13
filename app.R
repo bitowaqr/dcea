@@ -1532,7 +1532,6 @@ server = function(input, output, session){
       paste0("x",formatC(thresh_implied_wt, digits = 2, format = "f", big.mark = ","))
     })
 
-
   })
   
   
@@ -1665,11 +1664,10 @@ server = function(input, output, session){
         
         icer_change_abs = weighted_icer_raw - icer_raw
         icer_change_rel = 100 * (weighted_icer_raw - icer_raw) / icer_raw
-        thresh_implied_wt = weighted_icer_raw / icer_raw
+        thresh_implied_wt = icer_raw / weighted_icer_raw 
         icer_change_abs = formatC(icer_change_abs, digits = 0, format = "f", big.mark = ",")
         icer_change_rel = formatC(icer_change_rel, digits = 0, format = "f", big.mark = ",")
         thresh_implied_wt = formatC(thresh_implied_wt, digits = 2, format = "f", big.mark = ",")
-
 
         weighted_icer = paste0("£",formatC(weighted_icer_raw, digits = 0, format = "f", big.mark = ","),"/QALY")
         weighted_incQ = cost/weighted_icer_raw
