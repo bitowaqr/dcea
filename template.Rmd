@@ -59,7 +59,7 @@ Table: **Table 1**: Main model results
 | Incremental Cost-Effectiveness Ratio (ICER) | **£`r params$icer`/QALY** |
 Equity-weighted ICER | **`r params$weighted_icer`** |
 | ICER change | **£`r params$icer_change_abs` (`r params$icer_change_rel`%)** |
-| Treshold weight | **x`r params$thresh_implied_wt`** |
+| Threshold weight | **x`r params$thresh_implied_wt`** |
 | Incremental Net Health Benefit (INHB) 	| **`r params$nhb` QALYs** 	|
 | Equity-weighted INHB | **`r params$weighted_inhb`** | 
 |   Decision threshold	|  **£`r params$thresh` **	|
