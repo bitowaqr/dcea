@@ -88,8 +88,8 @@ rep_draw_ce_plane = function(eip,reg_line,max_yval,max_xval){
   require(ggplot2)
   
   p1 = ggplot() +
-    geom_hline(yintercept = 0, col = "gray", size = 0.5) +
-    geom_vline(xintercept = 0, col = "gray", size = 0.5) +
+    geom_hline(yintercept = 0, col = "gray", linewidth = 0.5) +
+    geom_vline(xintercept = 0, col = "gray", linewidth = 0.5) +
     geom_point(data = eip, aes(x=qalys, y=cost, col = cols)) +
     geom_line(data=reg_line, aes(x=x,y=y)) +
     scale_color_manual(
@@ -153,8 +153,8 @@ rep_draw_equityimpact_plot = function(
   require(ggplot2)
   
   p1 = ggplot(eip) +
-    geom_hline(yintercept = 0, col = "gray", size = 0.5) +
-    geom_vline(xintercept = 0, col = "gray", size = 0.5) +
+    geom_hline(yintercept = 0, col = "gray", linewidth = 0.5) +
+    geom_vline(xintercept = 0, col = "gray", linewidth = 0.5) +
     geom_abline(slope = -1) +
     geom_point(aes(x=ede,y=net_qalys,col = c("A","B")), size = 2) +
     # geom_point(data = eip, aes(x=qalys, y=cost, col = cols)) +
@@ -232,8 +232,8 @@ rep_draw_icer_equity_plot <- function(
   require(ggplot2)
   
   p1 = ggplot(eip) +
-    geom_hline(yintercept = eip_threshold, col = "gray", size = 0.5) +
-    geom_vline(xintercept = 0, col = "gray", size = 0.5) +
+    geom_hline(yintercept = eip_threshold, col = "gray", linewidth = 0.5) +
+    geom_vline(xintercept = 0, col = "gray", linewidth = 0.5) +
     geom_point(aes(x=ede,y=icer,col = c("A","B")), size = 2) +
     # geom_point(data = eip, aes(x=qalys, y=cost, col = cols)) +
     # geom_line(data=reg_line, aes(x=x,y=y)) +
