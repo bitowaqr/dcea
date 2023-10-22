@@ -1074,11 +1074,16 @@ server = function(input, output, session){
    
   # *Population outcomes ----
   resCEA <- reactive({
+    if(is.null(input$intPop_c1)){
+      pop = 0
+    } else {
+      pop = as.numeric(input$intPop_c1)
+    }
     data.frame(
       comparator=1,
       qalys=ifelse(is.null(input$incQALYs_c1),NA,input$incQALYs_c1),
       cost=ifelse(is.null(input$incCost_c1),NA,input$incCost_c1),
-      pop=as.numeric(input$intPop_c1))
+      pop=pop)
   })
   
   # *Live HOC distribution -----
